@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Virtual environments (neu sau nay dung venv)
+venv/
+.venv/
+env/
+
+# Flask dev server
+server.log
+*.log
+
+# Du lieu runtime cua app - tu vung + anh nguoi dung tu them, khong nen commit
+data/
+
+# Cache audio TTS cua CLI script (generate_anki.py)
+_media_cache/
+
+# File .apkg xuat ra de test, khong phai source code
+*.apkg
+
+# Claude Code - cau hinh ca nhan/local, khong dung chung
+.claude/settings.local.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Secrets
+.env
+openspec
+.claude/

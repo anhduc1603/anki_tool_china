@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AnkiTool - Tạo Flashcard Tiếng Trung</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="app-header-inner">
+    <div class="brand">
+      <span class="brand-mark">汉</span>
+      <div>
+        <h1>AnkiTool</h1>
+        <p>Trình tạo Flashcard tiếng Trung cho Anki</p>
+      </div>
+    </div>
+    <div class="word-count" id="word-count">0 từ</div>
+  </div>
+</header>
+
+<main class="layout">
+
+  <!-- CỘT TRÁI: form + danh sách -->
+  <section class="panel form-panel">
+    <h2 id="form-title">Thêm từ mới</h2>
+    <form id="word-form">
+      <input type="hidden" id="word-id" value="">
+
+      <div class="field">
+        <label for="hanzi">Chữ Hán <span class="req">*</span></label>
+        <input type="text" id="hanzi" name="hanzi" placeholder="你好" autocomplete="off" required>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="pinyin">Pinyin <span class="req">*</span></label>
+          <input type="text" id="pinyin" name="pinyin" placeholder="nǐ hǎo" autocomplete="off" required>
+        </div>
+        <button type="button" id="listen-btn" class="btn btn-icon" title="Nghe thử phát âm">
+          🔊 Nghe thử
+        </button>
+      </div>
+
+      <div class="field">
+        <label for="meaning">Nghĩa tiếng Việt <span class="req">*</span></label>
+        <input type="text" id="meaning" name="meaning" placeholder="xin chào" autocomplete="off" required>
+      </div>
+
+      <div class="field">
+        <label for="example">Câu ví dụ</label>
+        <textarea id="example" name="example" rows="2" placeholder="你好，很高兴认识你。(Xin chào, rất vui được gặp bạn.)"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="mnemonic">Ảnh gợi nhớ <span class="hint">(hiện luôn ở mặt đáp án)</span></label>
+        <input type="file" id="mnemonic" name="mnemonic" accept=".gif,.png,.jpg,.jpeg,.webp,.svg">
+        <div class="paste-zone" id="mnemonic-paste-zone" tabindex="0">📋 Hoặc bấm vào đây rồi dán ảnh (Ctrl+V)</div>
+        <p class="paste-status" id="mnemonic-paste-status"></p>
+        <div id="mnemonic-current" class="gif-current hidden">
+          <span>Ảnh hiện tại đã lưu.</span>
+          <button type="button" id="remove-mnemonic-btn" class="btn btn-tiny btn-danger">Xóa ảnh</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="gif">Ảnh GIF nét viết <span class="hint">(ẩn sẵn, bấm nút mới hiện)</span></label>
+        <input type="file" id="gif" name="gif" accept=".gif,.png,.jpg,.jpeg,.webp,.svg">
+        <div class="paste-zone" id="gif-paste-zone" tabindex="0">📋 Hoặc bấm vào đây rồi dán ảnh (Ctrl+V)</div>
+        <p class="paste-status" id="gif-paste-status"></p>
+        <div id="gif-current" class="gif-current hidden">
+          <span>Ảnh hiện tại đã lưu.</span>
+          <button type="button" id="remove-gif-btn" class="btn btn-tiny btn-danger">Xóa ảnh</button>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" id="save-btn">Lưu từ</button>
+        <button type="button" class="btn btn-ghost hidden" id="cancel-edit-btn">Hủy sửa</button>
+      </div>
+      <p class="form-msg" id="form-msg"></p>
+    </form>
+
+    <hr class="divider">
+
+    <h2>Danh sách từ đã thêm</h2>
+    <div id="word-list" class="word-list">
+      <p class="empty-hint" id="empty-hint">Chưa có từ nào. Thêm từ đầu tiên ở form phía trên nhé.</p>
+    </div>
+
+    <div class="export-box">
+      <div class="field">
+        <label for="deck-name">Tên bộ thẻ (deck)</label>
+        <input type="text" id="deck-name" value="MyChineseDeck" autocomplete="off">
+      </div>
+      <button type="button" id="export-btn" class="btn btn-export">⬇ Xuất file .apkg</button>
+      <p class="export-hint">Sau khi tải xong: mở Anki → File → Import... → chọn file vừa tải.</p>
+    </div>
+  </section>
+
+  <!-- CỘT PHẢI: preview -->
+  <section class="panel preview-panel">
+    <h2>Xem trước thẻ</h2>
+    <p class="preview-hint">Bấm vào thẻ để lật mặt trước / mặt sau — giống hệt khi học trong Anki.</p>
+
+    <div class="flip-wrap">
+      <div class="flip-card" id="flip-card">
+        <div class="flip-inner" id="flip-inner">
+
+          <div class="flip-face flip-front card-surface">
+            <div class="hanzi" id="p-hanzi-front">你好</div>
+            <div class="pinyin" id="p-pinyin-front">nǐ hǎo</div>
+            <button type="button" class="audio-btn" id="play-audio-btn" title="Phát âm">🔊</button>
+          </div>
+
+          <div class="flip-face flip-back card-surface">
+            <div class="hanzi" id="p-hanzi-back">你好</div>
+            <div class="pinyin" id="p-pinyin-back">nǐ hǎo</div>
+            <hr>
+            <div class="meaning" id="p-meaning">xin chào</div>
+            <div class="example" id="p-example"></div>
+            <div class="mnemonic" id="p-mnemonic"></div>
+            <button type="button" class="toggle-gif-btn hidden" id="toggle-gif-btn">✍️ Xem cách viết nét</button>
+            <div class="gif-content" id="p-gif"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <p class="flip-tip" id="flip-tip">Bấm vào thẻ để xem đáp án</p>
+  </section>
+
+</main>
+
+<audio id="audio-player"></audio>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
