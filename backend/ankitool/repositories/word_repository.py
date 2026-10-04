@@ -22,6 +22,9 @@ WORD_FIELDS = (
 )
 
 
+_IN_CHUNK = 500  # so bien toi da moi cau IN (...)
+
+
 def _row_to_word(row):
     return {field: row[field] for field in WORD_FIELDS}
 
@@ -41,6 +44,20 @@ def get(word_id):
 def exists(word_id):
     with connect() as conn:
         return conn.execute("SELECT id FROM words WHERE id = ?", (word_id,)).fetchone() is not None
+
+
+def find_existing_hanzi(hanzis):
+    """Tap chu Han (trong `hanzis`) da co trong bang words. Chia nhom de khong vuot gioi han bien cua SQLite."""
+    hanzis = list(dict.fromkeys(hanzis))
+    found = set()
+    with connect() as conn:
+        for start in range(0, len(hanzis), _IN_CHUNK):
+            chunk = hanzis[start : start + _IN_CHUNK]
+            rows = conn.execute(
+                f"SELECT hanzi FROM words WHERE hanzi IN ({','.join('?' * len(chunk))})", chunk
+            ).fetchall()
+            found.update(r["hanzi"] for r in rows)
+    return found
 
 
 def insert(word):
@@ -89,6 +106,22 @@ def delete(word_id):
     with connect() as conn:
         cur = conn.execute("DELETE FROM words WHERE id = ?", (word_id,))
         return cur.rowcount > 0
+
+
+def count_media_references(filename):
+    """So tu dang tham chieu file nay (anh goi nho, GIF hoac audio)."""
+    with connect() as conn:
+        return conn.execute(
+            "SELECT COUNT(*) FROM words WHERE mnemonic_filename = ? OR gif_filename = ? OR audio_filename = ?",
+            (filename, filename, filename),
+        ).fetchone()[0]
+
+
+def list_referenced_media():
+    """Tap ten moi file dang duoc it nhat 1 tu tham chieu."""
+    with connect() as conn:
+        rows = conn.execute("SELECT mnemonic_filename, gif_filename, audio_filename FROM words").fetchall()
+    return {name for row in rows for name in row if name}
 
 
 def set_category(word_id, category_id):

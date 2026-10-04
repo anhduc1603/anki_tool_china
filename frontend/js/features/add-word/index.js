@@ -1,6 +1,7 @@
 // Tab Them tu moi: form + dan anh, danh sach tu, preview the, xuat .apkg.
 
 import { initDeckExport } from "./deck-export.js";
+import { initImport } from "./import/index.js";
 import { queryElements } from "./elements.js";
 import { createImageFields } from "./image-fields.js";
 import { createPreview } from "./preview.js";
@@ -22,6 +23,7 @@ export function initAddWord() {
   });
   const form = createWordForm(els, { imageFields, preview, onSaved: wordList.refresh });
   initDeckExport(els);
+  initImport({ onImported: wordList.refresh });
 
   preview.update();
   wordList.refresh();

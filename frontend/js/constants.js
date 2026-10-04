@@ -29,3 +29,8 @@ export const SWIPE_THRESHOLD = 80;
 export const SIDEBAR_STORAGE_KEY = "ankitool.sidebar.collapsed";
 // Duoi diem ngat nay menu la ngan keo (drawer); trung voi @media trong css/sidebar.css
 export const NARROW_SCREEN_QUERY = "(max-width: 900px)";
+
+// Nhap CSV: so dong gui len moi lan (server cho toi da 20); nho de thanh tien trinh nhich deu
+export const IMPORT_BATCH_SIZE = 5;
+// Gioi han hien thi/chan som o giao dien (server van kiem tra lai)
+export const IMPORT_MAX_BYTES = 1024 * 1024;

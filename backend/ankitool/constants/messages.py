@@ -36,3 +36,22 @@ TIMING_ITEM_INVALID = "Thoi gian '{grade}' khong hop le."
 TIMING_VALUE_INVALID = "Thoi gian '{grade}' phai la so nguyen tu 1 tro len."
 TIMING_UNIT_INVALID = "Don vi cua '{grade}' phai la phut, gio hoac ngay."
 TIMING_TOO_LONG = "Thoi gian '{grade}' khong duoc vuot qua 365 ngay."
+
+# --- nhap tu hang loat tu CSV (thong bao moi: tieng Viet co dau vi hien thi truc tiep cho nguoi dung) ---
+IMPORT_EMPTY = "Nội dung CSV đang trống."
+IMPORT_NOT_TEXT = "Thiếu nội dung CSV."
+IMPORT_MALFORMED = "Không đọc được CSV: {error}"
+IMPORT_MISSING_COLUMNS = "Tiêu đề CSV thiếu cột bắt buộc: {columns}."
+IMPORT_TOO_MANY_ROWS = "CSV có {count} dòng dữ liệu, vượt quá giới hạn {limit} dòng mỗi lần nhập."
+IMPORT_TOO_LARGE = "CSV lớn hơn {limit_kb} KB, vượt quá giới hạn cho phép."
+IMPORT_IGNORED_COLUMNS = "Bỏ qua cột không dùng: {columns}."
+IMPORT_BATCH_INVALID = "Danh sách dòng cần nhập không hợp lệ."
+IMPORT_BATCH_TOO_LARGE = "Mỗi lần chỉ nhập tối đa {limit} dòng."
+IMPORT_ROW_MISSING_FIELDS = "Thiếu chữ Hán, pinyin hoặc nghĩa."
+IMPORT_ROW_DUPLICATE_EXISTING = "Từ đã có trong danh sách (giữ nguyên từ cũ)."
+IMPORT_ROW_DUPLICATE_IN_FILE = "Trùng với dòng {first_row} trong cùng file."
+IMPORT_ROW_TOO_MANY_VALUES = (
+    "Có nhiều giá trị hơn số cột trong tiêu đề — có thể thiếu dấu ngoặc kép quanh trường chứa dấu phẩy."
+)
+IMPORT_ROW_FAILED = "Không lưu được dòng này: {error}"
+IMPORT_ROW_FAILED_UNKNOWN = "Không lưu được dòng này do lỗi không xác định."

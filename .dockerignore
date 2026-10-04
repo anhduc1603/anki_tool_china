@@ -1,0 +1,9 @@
+data/
+.git/
+openspec/
+.claude/
+**/__pycache__/
+*.pyc
+*.log
+*.apkg
+_media_cache/

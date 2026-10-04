@@ -36,31 +36,54 @@ Nằm trong `data/` (không đưa lên git): `ankitool.db` (SQLite), `media/` (�
 backend/
 ├── run.py                       # điểm chạy server
 ├── generate_anki.py             # điểm chạy CLI (CSV -> .apkg)
+├── cleanup_media.py             # điểm chạy CLI dọn file media không còn từ nào dùng
 └── ankitool/
     ├── __init__.py              # create_app() - app factory
     ├── config/settings.py       # đường dẫn, cấu hình Flask, host/port, ANKITOOL_DATA_DIR
-    ├── constants/               # hằng số: srs, review_settings, media, anki, scopes, messages (thông báo lỗi)
+    ├── constants/               # hằng số: srs, review_settings, media, anki, scopes, import_limits, messages (thông báo lỗi)
     ├── database/                # connection.py (mở kết nối), schema.py (tạo bảng, nâng cấp cột, nhập words.json)
     ├── repositories/            # chỉ chứa SQL: word / category / setting
-    ├── services/                # luật nghiệp vụ: word, category, study, settings, media, export + scheduler (SM-2 thuần)
+    ├── services/                # luật nghiệp vụ: word, word_import (nhập CSV), category, study, settings, media, export + scheduler (SM-2 thuần)
     ├── integrations/            # thư viện ngoài: tts.py (edge-tts), anki/ (genanki: card_template, deck_builder)
-    ├── controllers/             # Flask Blueprint mỏng: page, word, category, study, settings, media, export
+    ├── controllers/             # Flask Blueprint mỏng: page, word, word_import, category, study, settings, media, export
     ├── errors.py                # AppError / ValidationError (400) / NotFoundError (404) + handler -> JSON
     ├── utils/clock.py           # thời gian địa phương cho lịch ôn
-    └── cli/csv_import.py        # logic của generate_anki.py
+    └── cli/                     # csv_import.py (logic generate_anki.py), cleanup_media.py (logic cleanup_media.py)
 frontend/
 ├── index.html                   # khung trang: menu trái (sidebar) + thanh trên cùng + 4 vùng chức năng
-├── css/                         # base, forms, add-word, sidebar, categories, study, settings
+├── css/                         # base, forms, add-word, import, sidebar, categories, study, settings
 └── js/
     ├── main.js                  # điểm vào, khởi tạo từng feature
     ├── constants.js             # tên sự kiện, id tab, hằng số FE
     ├── core/                    # events.js, tabs.js (chuyển tab), sidebar.js (thu gọn/ngăn kéo menu trái), http.js
     ├── api/                     # mỗi nhóm API một file (words, categories, study, settings, tts)
     ├── shared/                  # dom.js (escapeHtml), audio.js (phát âm)
-    └── features/                # add-word/, categories/, study/, settings/
+    └── features/                # add-word/ (kèm import/ = hộp thoại nhập CSV), categories/, study/, settings/
 data/                            # dữ liệu chạy thật (không đưa lên git)
 openspec/                        # đặc tả và các thay đổi (OpenSpec)
 ```
+
+## File đính kèm và dọn dẹp
+
+Mỗi từ có thể kèm ảnh gợi nhớ, GIF nét viết (bạn tải lên) và audio phát âm (app tự sinh, tên file theo chữ Hán nên hai từ cùng chữ Hán dùng chung một audio). Chúng nằm trong `data/media/`.
+
+App tự dọn để không để lại file thừa:
+
+- **Xóa từ**: xóa luôn ảnh, GIF và audio của từ đó, trừ file mà từ khác còn dùng (vd audio dùng chung). Hộp thoại xác nhận có nhắc việc này.
+- **Sửa từ**: ảnh/GIF bị thay hoặc bị xóa, và audio cũ khi đổi chữ Hán, được xóa nếu không còn từ nào dùng. File từ vẫn dùng thì giữ nguyên.
+- **Lưu lỗi** (vd không sinh được audio): ảnh vừa tải lên bị bỏ, từ và file cũ giữ nguyên.
+- Việc xóa file chỉ là bước phụ: nếu file đang bị khóa hay đã mất thì thao tác xóa/sửa từ vẫn thành công.
+- Xóa là **xóa hẳn**, không có thùng rác: xóa nhầm từ thì ảnh tự tải lên cũng mất. Hãy sao lưu `data/` định kỳ.
+
+File mồ côi từ trước (không từ nào dùng, hoặc audio do nút nghe thử sinh ra) dọn bằng lệnh:
+
+```bash
+python backend/cleanup_media.py                              # chỉ LIỆT KÊ (mặc định), không xóa gì
+python backend/cleanup_media.py --apply                      # xóa thật sự
+python backend/cleanup_media.py --apply --min-age-minutes 0  # cả file mới tạo
+```
+
+Lệnh dùng cùng thư mục dữ liệu với app (`ANKITOOL_DATA_DIR` nếu có). Các lớp an toàn: bỏ qua file mới tạo trong 10 phút gần đây (có thể là ảnh vừa tải lên khi server đang chạy), từ chối `--apply` khi database không có từ nào mà media có file (tránh trỏ nhầm thư mục; ghi đè bằng `--allow-empty-db`), và chỉ đụng file thường nằm trực tiếp trong `media/`. Nên sao lưu `data/` rồi mới `--apply`.
 
 ## Khung trang (frontend)
 
@@ -68,6 +91,26 @@ openspec/                        # đặc tả và các thay đổi (OpenSpec)
 - Màn hình rộng (> 900px): menu mở rộng 232px, nút ☰ thu gọn thành cột icon 68px; lựa chọn được nhớ trong `localStorage` (khóa `ankitool.sidebar.collapsed`).
 - Màn hình hẹp (≤ 900px): menu là ngăn kéo, mặc định ẩn; ☰ mở ra đè lên nội dung, đóng khi chọn mục, bấm nền mờ hoặc nhấn `Esc`.
 - Trạng thái nằm ở class trên `#app-shell` (`sidebar-collapsed`, `sidebar-open`), phần hiển thị do `css/sidebar.css` lo; `core/sidebar.js` chỉ đổi class. Biến CSS `--sidebar-current-w` cho các phần tử cố định (thanh chấm điểm ở tab Học) nằm đúng trong vùng nội dung.
+
+## Nhập hàng loạt từ CSV (dùng AI để tạo sẵn nội dung)
+
+Ở tab **Thêm từ mới**, bấm **📥 Nhập từ CSV** để mở hộp thoại:
+
+1. **Nhờ AI tạo CSV**: (tùy chọn) nhập danh sách từ, bấm **Sao chép prompt**, dán vào ChatGPT/Claude/... và lấy CSV trả về. App không tự gọi AI; prompt đã mô tả đúng định dạng cần nhập.
+2. **Đưa CSV vào**: dán văn bản (cả khối <code>```csv ... ```</code> cũng được) hoặc chọn file `.csv`, bấm **Xem trước**.
+3. **Xem trước**: bảng từng dòng với trạng thái *Hợp lệ / Trùng / Lỗi* kèm lý do; chưa lưu gì. Có thể quay lại sửa.
+4. **Nhập**: bấm "Nhập N từ"; app lưu theo từng lô nhỏ (có thanh tiến trình, nút Hủy). Cuối cùng là báo cáo số từ đã tạo / trùng / lỗi / chưa xử lý và lý do. Đóng hộp thoại thì danh sách từ tự cập nhật.
+
+Định dạng CSV:
+
+- Dòng đầu là tiêu đề với cột `hanzi`, `pinyin`, `meaning` (bắt buộc) và `example` (tùy chọn); không phân biệt hoa/thường và thứ tự cột. Cột lạ (như `gif`) bị bỏ qua và được báo.
+- Dấu phân cách `,` `;` hoặc Tab; trường có dấu phân cách, dấu nháy kép hay xuống dòng phải đặt trong ngoặc kép `"..."` (nháy kép bên trong viết `""`). Dòng có nhiều giá trị hơn số cột (thường do quên ngoặc kép) bị báo lỗi thay vì nhập sai.
+- UTF-8 (BOM được chấp nhận); dòng trống bị bỏ qua.
+- Giới hạn: 500 dòng dữ liệu và 1 MB mỗi lần nhập.
+
+Quy tắc: từ trùng chữ Hán với từ đã có (hoặc với dòng trước đó trong cùng file) bị **bỏ qua**, từ cũ không bao giờ bị ghi đè; từ nhập vào giống từ thêm bằng form (có âm thanh, là từ mới đến hạn học ngay, chưa phân loại, chưa có ảnh — gán danh mục ở tab Danh mục, thêm ảnh bằng cách sửa từ). Nhập lại cùng một file là an toàn vì chỉ những từ chưa có mới được tạo. Âm thanh sinh qua mạng (edge-tts), thực đo khoảng 0,7 giây mỗi từ mới.
+
+API (dùng bởi giao diện): `POST /api/words/import/preview` (`{"csv": "..."}` → `rows`, `summary`, `warnings`; không ghi gì) và `POST /api/words/import` (`{"rows": [{"row","hanzi","pinyin","meaning","example"}]}`, tối đa 20 dòng mỗi lần → `results`, `summary`). Mọi kiểm tra (thiếu trường, trùng, giới hạn) do server làm.
 
 ## Quy tắc phụ thuộc
 

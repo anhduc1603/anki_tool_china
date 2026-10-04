@@ -51,7 +51,7 @@ export function createWordList(els, { onEdit, onDeleted }) {
   }
 
   async function remove(id) {
-    if (!confirm("Xóa từ này khỏi danh sách?")) return;
+    if (!confirm("Xóa từ này khỏi danh sách? Ảnh, GIF và âm thanh đính kèm của từ cũng sẽ bị xóa.")) return;
     if (await deleteWord(id)) {
       onDeleted(id);
       await refresh();

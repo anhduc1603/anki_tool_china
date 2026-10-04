@@ -1,0 +1,100 @@
+/* ---------- Nut nhap CSV o dau danh sach tu ---------- */
+.list-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.list-heading h2 { margin: 0; }
+
+/* ---------- Hop thoai nhap tu CSV ---------- */
+.import-dialog {
+  width: min(920px, calc(100vw - 24px));
+  max-height: calc(100vh - 32px);
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  color: var(--ink);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+.import-dialog[open] { display: flex; flex-direction: column; }
+.import-dialog::backdrop { background: rgba(0, 0, 0, 0.45); }
+
+.import-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.import-head h2 { margin: 0; font-size: 18px; }
+.import-close {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--panel);
+  font-size: 15px;
+  cursor: pointer;
+}
+.import-close:hover { background: var(--bg); }
+.import-close:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.import-body { flex: 1; min-height: 0; overflow-y: auto; padding: 18px 20px 22px; }
+
+.import-block + .import-block { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border); }
+.import-block h3 { margin: 0 0 6px; font-size: 15px; }
+.import-help { margin: 0 0 10px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+.import-help code { background: var(--bg); padding: 1px 5px; border-radius: 4px; }
+
+.import-dialog textarea {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  resize: vertical;
+}
+.import-dialog textarea:focus { outline: 2px solid rgba(192, 57, 43, 0.35); border-color: var(--red); }
+.import-prompt-details { margin-top: 10px; font-size: 13px; }
+.import-prompt-details summary { cursor: pointer; color: var(--muted); }
+.import-prompt-details textarea { margin-top: 8px; background: var(--bg); }
+
+.import-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 12px; }
+.import-actions .form-msg { margin: 0; min-height: 0; }
+.import-file-label { display: inline-block; }
+
+.import-summary { margin: 0 0 10px; font-size: 14px; font-weight: 600; }
+.import-warnings { margin: 0 0 10px; padding-left: 20px; font-size: 13px; color: #8a5a00; }
+.import-warnings:empty { display: none; }
+
+.import-table-wrap { max-height: 46vh; overflow: auto; border: 1px solid var(--border); border-radius: 10px; }
+.import-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.import-table th,
+.import-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+.import-table th { position: sticky; top: 0; background: var(--bg); font-weight: 600; z-index: 1; }
+.import-table td.cell-hanzi { font-family: "Noto Sans SC", sans-serif; font-size: 16px; font-weight: 600; white-space: nowrap; }
+.import-table td.cell-example { max-width: 260px; white-space: pre-line; color: var(--muted); }
+.import-table td.cell-reason { color: var(--muted); }
+.import-table tr.row-duplicate { background: #fff8e6; }
+.import-table tr.row-invalid,
+.import-table tr.row-failed { background: #fdf0ee; }
+
+.chip { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.chip-ok,
+.chip-created { background: #e3f4e8; color: #1f7a3d; }
+.chip-duplicate { background: #fdf0cc; color: #8a5a00; }
+.chip-invalid,
+.chip-failed { background: #fbdcd7; color: var(--red-dark); }
+.chip-skipped { background: #eceae5; color: var(--muted); }
+
+.import-progress { display: block; width: 100%; height: 14px; }
+.import-stats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.import-stats .chip { font-size: 13px; padding: 4px 12px; }
+
+@media (max-width: 600px) {
+  .import-dialog { width: calc(100vw - 12px); max-height: calc(100vh - 12px); }
+  .import-head { padding: 12px 14px; }
+  .import-body { padding: 14px; }
+  .list-heading { flex-wrap: wrap; }
+}

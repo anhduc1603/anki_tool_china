@@ -1,4 +1,4 @@
-import { getJson, sendForm } from "../core/http.js";
+import { getJson, sendForm, sendJson } from "../core/http.js";
 
 // Danh sach tu; data la mang tu.
 export function listWords() {
@@ -18,4 +18,14 @@ export async function deleteWord(wordId) {
 
 export function exportUrl(deckName) {
   return `/api/export?deck_name=${encodeURIComponent(deckName)}`;
+}
+
+// Xem truoc CSV: data = { rows, summary, warnings } (khong ghi gi); loi cau truc -> ok false, data.error
+export function previewImport(csv) {
+  return sendJson("/api/words/import/preview", "POST", { csv });
+}
+
+// Nhap 1 lo dong hop le (toi da 20); data = { results: [{row, status, reason?, id?}], summary }
+export function importWords(rows) {
+  return sendJson("/api/words/import", "POST", { rows });
 }

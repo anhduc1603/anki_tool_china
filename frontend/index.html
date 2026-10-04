@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="/static/css/base.css">
 <link rel="stylesheet" href="/static/css/forms.css">
 <link rel="stylesheet" href="/static/css/add-word.css">
+<link rel="stylesheet" href="/static/css/import.css">
 <link rel="stylesheet" href="/static/css/sidebar.css">
 <link rel="stylesheet" href="/static/css/categories.css">
 <link rel="stylesheet" href="/static/css/study.css">
@@ -126,7 +127,10 @@
 
     <hr class="divider">
 
-    <h2>Danh sách từ đã thêm</h2>
+    <div class="list-heading">
+      <h2>Danh sách từ đã thêm</h2>
+      <button type="button" class="btn btn-icon" id="import-open-btn" title="Nhập nhiều từ từ file CSV (do AI tạo)">📥 Nhập từ CSV</button>
+    </div>
     <div id="word-list" class="word-list">
       <p class="empty-hint" id="empty-hint">Chưa có từ nào. Thêm từ đầu tiên ở form phía trên nhé.</p>
     </div>
@@ -328,6 +332,86 @@
 
 </div><!-- /.app-main -->
 </div><!-- /.app-shell -->
+
+<!-- HỘP THOẠI: nhập hàng loạt từ CSV (xem js/features/add-word/import/) -->
+<dialog id="import-dialog" class="import-dialog" aria-labelledby="import-title">
+  <div class="import-head">
+    <h2 id="import-title">Nhập từ vựng từ CSV</h2>
+    <button type="button" class="import-close" id="import-close-btn" title="Đóng" aria-label="Đóng">✕</button>
+  </div>
+
+  <div class="import-body">
+    <!-- Bước 1-2: lấy CSV từ AI và đưa vào -->
+    <section class="import-step" id="import-step-input">
+      <div class="import-block">
+        <h3>1. Nhờ AI tạo CSV</h3>
+        <p class="import-help">Nhập danh sách từ (mỗi dòng một từ: chữ Hán, pinyin hay nghĩa tiếng Việt đều được), bấm <b>Sao chép prompt</b>, dán vào ChatGPT/Claude/... rồi lấy CSV AI trả về.</p>
+        <textarea id="import-words" rows="4" placeholder="Ví dụ:&#10;你好&#10;谢谢&#10;yêu thương" spellcheck="false"></textarea>
+        <div class="import-actions">
+          <button type="button" class="btn btn-icon" id="import-copy-btn">📋 Sao chép prompt</button>
+          <span class="form-msg" id="import-copy-msg"></span>
+        </div>
+        <details class="import-prompt-details">
+          <summary>Xem nội dung prompt</summary>
+          <textarea id="import-prompt-text" rows="10" readonly spellcheck="false"></textarea>
+        </details>
+      </div>
+
+      <div class="import-block">
+        <h3>2. Đưa CSV vào</h3>
+        <p class="import-help">Dán CSV (cả khối ```csv ... ``` cũng được) hoặc chọn file <code>.csv</code> lưu dạng UTF-8. Tối đa 500 dòng, 1 MB.</p>
+        <textarea id="import-csv" rows="8" placeholder="hanzi,pinyin,meaning,example" spellcheck="false"></textarea>
+        <div class="import-actions">
+          <label class="btn btn-ghost import-file-label" for="import-file">📄 Chọn file CSV</label>
+          <input type="file" id="import-file" accept=".csv,.txt,text/csv" hidden>
+          <button type="button" class="btn btn-primary" id="import-preview-btn">Xem trước</button>
+          <span class="form-msg" id="import-input-msg"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bước 3: xem trước -->
+    <section class="import-step hidden" id="import-step-preview">
+      <p class="import-summary" id="import-summary"></p>
+      <ul class="import-warnings" id="import-warnings"></ul>
+      <div class="import-table-wrap">
+        <table class="import-table" id="import-table">
+          <thead><tr><th>Dòng</th><th>Chữ Hán</th><th>Pinyin</th><th>Nghĩa</th><th>Ví dụ</th><th>Trạng thái</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="import-actions">
+        <button type="button" class="btn btn-ghost" id="import-back-btn">← Quay lại sửa</button>
+        <button type="button" class="btn btn-primary" id="import-start-btn">Nhập từ</button>
+      </div>
+    </section>
+
+    <!-- Bước 4: đang nhập -->
+    <section class="import-step hidden" id="import-step-running">
+      <p class="import-summary" id="import-progress-text">Đang nhập...</p>
+      <progress class="import-progress" id="import-progress" max="100" value="0"></progress>
+      <p class="import-help">Mỗi từ mới cần sinh âm thanh nên có thể mất 1–2 giây. Bạn có thể hủy; các từ đã lưu vẫn được giữ.</p>
+      <div class="import-actions">
+        <button type="button" class="btn btn-ghost" id="import-cancel-btn">Hủy</button>
+      </div>
+    </section>
+
+    <!-- Bước 5: báo cáo -->
+    <section class="import-step hidden" id="import-step-report">
+      <div class="import-stats" id="import-stats"></div>
+      <p class="import-help" id="import-report-note"></p>
+      <div class="import-table-wrap">
+        <table class="import-table" id="import-report-table">
+          <thead><tr><th>Dòng</th><th>Chữ Hán</th><th>Kết quả</th><th>Lý do</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="import-actions">
+        <button type="button" class="btn btn-primary" id="import-done-btn">Đóng</button>
+      </div>
+    </section>
+  </div>
+</dialog>
 
 <audio id="audio-player"></audio>
 
