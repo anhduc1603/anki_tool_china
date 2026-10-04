@@ -1,0 +1,27 @@
+/* ---------- Tab Cai dat ---------- */
+.layout-settings { grid-template-columns: 1fr; max-width: 640px; }
+.settings-section + .settings-section { margin-top: 18px; }
+.settings-help { margin: 0 0 16px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+.timing-rows { display: flex; flex-direction: column; gap: 10px; }
+.timing-row {
+  display: grid;
+  grid-template-columns: 110px 100px 1fr;
+  gap: 10px;
+  align-items: center;
+}
+.timing-label small { color: var(--muted); font-weight: 400; }
+.timing-row input,
+.timing-row select {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  background: #fff;
+  min-width: 0;
+}
+.timing-row select { max-width: 140px; }
+.timing-row.invalid input { border-color: var(--red); }
+.settings-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 18px; }
+@media (max-width: 480px) {
+  .timing-row { grid-template-columns: 90px 80px 1fr; }
+}

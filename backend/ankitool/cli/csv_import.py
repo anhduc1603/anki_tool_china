@@ -1,9 +1,9 @@
 """
 Sinh file .apkg de import vao Anki tu file CSV cac tu tieng Trung.
-(Cong cu dong lenh - phien ban co giao dien web xem trong app.py)
+(Cong cu dong lenh - phien ban co giao dien web xem trong backend/run.py)
 
 Cach dung:
-    python generate_anki.py words.csv output.apkg
+    python backend/generate_anki.py words.csv output.apkg
 
 File CSV can co cac cot (co header dong dau):
     hanzi,pinyin,meaning,example,gif
@@ -22,13 +22,8 @@ import csv
 import os
 import sys
 
-import anki_builder
-
-if sys.platform == "win32":
-    sys.stdout.reconfigure(encoding="utf-8")
-    sys.stderr.reconfigure(encoding="utf-8")
-
-MEDIA_DIR = "_media_cache"
+from ankitool.constants.media import CLI_MEDIA_DIR
+from ankitool.integrations.anki import deck_builder
 
 
 def read_words(csv_path):
@@ -39,8 +34,12 @@ def read_words(csv_path):
 
 
 def main():
+    if sys.platform == "win32":
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+
     if len(sys.argv) != 3:
-        print("Cach dung: python generate_anki.py <input.csv> <output.apkg>")
+        print("Cach dung: python backend/generate_anki.py <input.csv> <output.apkg>")
         sys.exit(1)
 
     csv_path, output_path = sys.argv[1], sys.argv[2]
@@ -70,11 +69,7 @@ def main():
         )
 
     print("Dang sinh audio va dong goi file...")
-    anki_builder.build_apkg(words, MEDIA_DIR, output_path, deck_name)
+    deck_builder.build_apkg(words, CLI_MEDIA_DIR, output_path, deck_name)
 
     print(f"\nDa tao xong file: {output_path}")
     print("Mo Anki -> File -> Import... -> chon file nay de nhap the.")
-
-
-if __name__ == "__main__":
-    main()

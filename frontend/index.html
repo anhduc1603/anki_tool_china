@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AnkiTool - Tạo Flashcard Tiếng Trung</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/base.css">
+<link rel="stylesheet" href="/static/css/forms.css">
+<link rel="stylesheet" href="/static/css/add-word.css">
+<link rel="stylesheet" href="/static/css/sidebar.css">
+<link rel="stylesheet" href="/static/css/categories.css">
+<link rel="stylesheet" href="/static/css/study.css">
+<link rel="stylesheet" href="/static/css/settings.css">
+</head>
+<body>
+
+<div class="app-shell" id="app-shell">
+<script>
+  // Doc trang thai thu gon da luu truoc khi trinh duyet ve, de menu khong bi "giat".
+  // Khoa trung voi SIDEBAR_STORAGE_KEY trong js/constants.js.
+  try {
+    if (localStorage.getItem("ankitool.sidebar.collapsed") === "1") {
+      document.getElementById("app-shell").classList.add("sidebar-collapsed");
+    }
+  } catch (e) { /* localStorage bi chan: bo qua, mac dinh mo rong */ }
+</script>
+
+<!-- MENU CHỨC NĂNG (bên trái, thu gọn được; trên màn hình hẹp là ngăn kéo) -->
+<aside class="sidebar" id="sidebar" aria-label="Menu chức năng">
+  <div class="sidebar-brand">
+    <span class="brand-mark">汉</span>
+    <div class="brand-text">
+      <h1>AnkiTool</h1>
+      <p>Trình tạo Flashcard tiếng Trung cho Anki</p>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <button type="button" class="tab-btn active" data-tab="tab-add" title="Thêm từ mới" aria-label="Thêm từ mới">
+      <span class="nav-icon" aria-hidden="true">📝</span><span class="nav-label">Thêm từ mới</span>
+    </button>
+    <button type="button" class="tab-btn" data-tab="tab-categories" title="Quản lý danh mục" aria-label="Quản lý danh mục">
+      <span class="nav-icon" aria-hidden="true">🗂️</span><span class="nav-label">Quản lý danh mục</span>
+    </button>
+    <button type="button" class="tab-btn" data-tab="tab-study" title="Học" aria-label="Học">
+      <span class="nav-icon" aria-hidden="true">🎓</span><span class="nav-label">Học</span>
+    </button>
+    <button type="button" class="tab-btn" data-tab="tab-settings" title="Cài đặt" aria-label="Cài đặt">
+      <span class="nav-icon" aria-hidden="true">⚙️</span><span class="nav-label">Cài đặt</span>
+    </button>
+  </nav>
+</aside>
+<div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+<div class="app-main">
+
+<!-- THANH TRÊN CÙNG: nút menu, tên chức năng đang mở, số từ -->
+<header class="topbar">
+  <button type="button" class="topbar-toggle" id="sidebar-toggle" aria-controls="sidebar" aria-expanded="true" title="Thu gọn/mở menu" aria-label="Thu gọn/mở menu">☰</button>
+  <h2 class="topbar-title" id="topbar-title">Thêm từ mới</h2>
+  <div class="word-count" id="word-count">0 từ</div>
+</header>
+
+<main class="layout tab-panel" id="tab-add">
+
+  <!-- CỘT TRÁI: form + danh sách -->
+  <section class="panel form-panel">
+    <h2 id="form-title">Thêm từ mới</h2>
+    <form id="word-form">
+      <input type="hidden" id="word-id" value="">
+
+      <div class="field">
+        <label for="hanzi">Chữ Hán <span class="req">*</span></label>
+        <input type="text" id="hanzi" name="hanzi" placeholder="你好" autocomplete="off" required>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="pinyin">Pinyin <span class="req">*</span></label>
+          <input type="text" id="pinyin" name="pinyin" placeholder="nǐ hǎo" autocomplete="off" required>
+        </div>
+        <button type="button" id="listen-btn" class="btn btn-icon" title="Nghe thử phát âm">
+          🔊 Nghe thử
+        </button>
+      </div>
+
+      <div class="field">
+        <label for="meaning">Nghĩa tiếng Việt <span class="req">*</span></label>
+        <input type="text" id="meaning" name="meaning" placeholder="xin chào" autocomplete="off" required>
+      </div>
+
+      <div class="field">
+        <label for="example">Câu ví dụ</label>
+        <textarea id="example" name="example" rows="2" placeholder="你好，很高兴认识你。(Xin chào, rất vui được gặp bạn.)"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="mnemonic">Ảnh gợi nhớ <span class="hint">(hiện luôn ở mặt đáp án)</span></label>
+        <input type="file" id="mnemonic" name="mnemonic" accept=".gif,.png,.jpg,.jpeg,.webp,.svg">
+        <div class="paste-zone" id="mnemonic-paste-zone" tabindex="0">📋 Hoặc bấm vào đây rồi dán ảnh (Ctrl+V)</div>
+        <p class="paste-status" id="mnemonic-paste-status"></p>
+        <div id="mnemonic-current" class="gif-current hidden">
+          <span>Ảnh hiện tại đã lưu.</span>
+          <button type="button" id="remove-mnemonic-btn" class="btn btn-tiny btn-danger">Xóa ảnh</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="gif">Ảnh GIF nét viết <span class="hint">(ẩn sẵn, bấm nút mới hiện)</span></label>
+        <input type="file" id="gif" name="gif" accept=".gif,.png,.jpg,.jpeg,.webp,.svg">
+        <div class="paste-zone" id="gif-paste-zone" tabindex="0">📋 Hoặc bấm vào đây rồi dán ảnh (Ctrl+V)</div>
+        <p class="paste-status" id="gif-paste-status"></p>
+        <div id="gif-current" class="gif-current hidden">
+          <span>Ảnh hiện tại đã lưu.</span>
+          <button type="button" id="remove-gif-btn" class="btn btn-tiny btn-danger">Xóa ảnh</button>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" id="save-btn">Lưu từ</button>
+        <button type="button" class="btn btn-ghost hidden" id="cancel-edit-btn">Hủy sửa</button>
+      </div>
+      <p class="form-msg" id="form-msg"></p>
+    </form>
+
+    <hr class="divider">
+
+    <h2>Danh sách từ đã thêm</h2>
+    <div id="word-list" class="word-list">
+      <p class="empty-hint" id="empty-hint">Chưa có từ nào. Thêm từ đầu tiên ở form phía trên nhé.</p>
+    </div>
+
+    <div class="export-box">
+      <div class="field">
+        <label for="deck-name">Tên bộ thẻ (deck)</label>
+        <input type="text" id="deck-name" value="MyChineseDeck" autocomplete="off">
+      </div>
+      <button type="button" id="export-btn" class="btn btn-export">⬇ Xuất file .apkg</button>
+      <p class="export-hint">Sau khi tải xong: mở Anki → File → Import... → chọn file vừa tải.</p>
+    </div>
+  </section>
+
+  <!-- CỘT PHẢI: preview -->
+  <section class="panel preview-panel">
+    <h2>Xem trước thẻ</h2>
+    <p class="preview-hint">Bấm vào thẻ để lật mặt trước / mặt sau — giống hệt khi học trong Anki.</p>
+
+    <div class="flip-wrap">
+      <div class="flip-card" id="flip-card">
+        <div class="flip-inner" id="flip-inner">
+
+          <div class="flip-face flip-front card-surface">
+            <div class="hanzi" id="p-hanzi-front">你好</div>
+            <div class="pinyin" id="p-pinyin-front">nǐ hǎo</div>
+            <button type="button" class="audio-btn" id="play-audio-btn" title="Phát âm">🔊</button>
+          </div>
+
+          <div class="flip-face flip-back card-surface">
+            <div class="hanzi" id="p-hanzi-back">你好</div>
+            <div class="pinyin" id="p-pinyin-back">nǐ hǎo</div>
+            <hr>
+            <div class="meaning" id="p-meaning">xin chào</div>
+            <div class="example" id="p-example"></div>
+            <div class="mnemonic" id="p-mnemonic"></div>
+            <button type="button" class="toggle-gif-btn hidden" id="toggle-gif-btn">✍️ Xem cách viết nét</button>
+            <div class="gif-content" id="p-gif"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <p class="flip-tip" id="flip-tip">Bấm vào thẻ để xem đáp án</p>
+  </section>
+
+</main>
+
+<!-- TAB: Quản lý danh mục -->
+<section class="tab-panel hidden" id="tab-categories">
+  <div class="layout layout-single">
+    <section class="panel">
+      <h2>Quản lý danh mục</h2>
+      <p class="preview-hint">Bấm tên danh mục để học danh mục đó. Dùng ⚙ để đổi tên, thêm danh mục con hoặc xóa (tối đa 2 cấp; xóa bị chặn nếu còn danh mục con hoặc còn từ bên trong). Các cột chỉ đếm từ đến hạn hôm nay.</p>
+
+      <div class="category-add-row">
+        <input type="text" id="new-parent-name" placeholder="Tên danh mục cha mới" autocomplete="off">
+        <button type="button" id="add-parent-btn" class="btn btn-primary">+ Thêm danh mục cha</button>
+      </div>
+      <p class="form-msg" id="category-msg"></p>
+
+      <div id="deck-table" class="deck-table"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Gán từ vào danh mục</h2>
+      <div class="assign-controls">
+        <label for="assign-scope">Danh mục</label>
+        <select id="assign-scope"></select>
+      </div>
+      <div id="assign-list" class="assign-list"></div>
+    </section>
+  </div>
+
+  <div class="gear-menu hidden" id="gear-menu"></div>
+</section>
+
+<!-- TAB: Học -->
+<section class="tab-panel hidden" id="tab-study">
+  <div class="layout layout-study">
+    <section class="panel study-panel">
+      <h2>Học</h2>
+      <div class="study-controls">
+        <label for="study-category-filter">Phạm vi học</label>
+        <select id="study-category-filter">
+          <option value="">Tất cả danh mục</option>
+        </select>
+        <span class="study-remaining" id="study-remaining"></span>
+      </div>
+
+      <div id="study-empty" class="study-empty hidden">
+        🎉 Không còn từ nào đến hạn ngay bây giờ. Quay lại sau nhé!
+      </div>
+
+      <div id="study-waiting" class="study-waiting hidden">
+        ⏳ Đang chờ thẻ tiếp theo — còn <b id="study-wait-time">00:00</b>
+        <div class="study-waiting-hint">Thẻ sẽ tự hiện khi đến giờ.</div>
+      </div>
+
+      <div id="study-card-wrap" class="flip-wrap study-flip-wrap">
+        <div class="flip-card study-card" id="study-flip-card">
+          <div class="flip-inner" id="study-flip-inner">
+
+            <div class="flip-face flip-front card-surface">
+              <div class="hanzi" id="study-hanzi-front">你好</div>
+              <div class="pinyin" id="study-pinyin-front">nǐ hǎo</div>
+              <button type="button" class="audio-btn" id="study-play-audio-btn" title="Phát âm">🔊</button>
+            </div>
+
+            <div class="flip-face flip-back card-surface">
+              <div class="hanzi" id="study-hanzi-back">你好</div>
+              <div class="pinyin" id="study-pinyin-back">nǐ hǎo</div>
+              <hr>
+              <div class="meaning" id="study-meaning">xin chào</div>
+              <div class="example" id="study-example"></div>
+              <div class="mnemonic" id="study-mnemonic"></div>
+              <button type="button" class="toggle-gif-btn hidden" id="study-toggle-gif-btn">✍️ Xem cách viết nét</button>
+              <div class="gif-content" id="study-gif"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="study-bar hidden" id="study-bar">
+    <div class="study-bar-inner">
+      <button type="button" class="btn study-show-btn" id="study-show-btn">Hiện đáp án</button>
+      <div class="study-grades hidden" id="study-grades">
+        <div class="study-grade">
+          <span class="study-grade-time" id="study-time-again"></span>
+          <button type="button" class="btn btn-grade btn-grade-again" data-grade="again">Again</button>
+        </div>
+        <div class="study-grade">
+          <span class="study-grade-time" id="study-time-hard"></span>
+          <button type="button" class="btn btn-grade btn-grade-hard" data-grade="hard">Hard</button>
+        </div>
+        <div class="study-grade">
+          <span class="study-grade-time" id="study-time-good"></span>
+          <button type="button" class="btn btn-grade btn-grade-good" data-grade="good">Good</button>
+        </div>
+        <div class="study-grade">
+          <span class="study-grade-time" id="study-time-easy"></span>
+          <button type="button" class="btn btn-grade btn-grade-easy" data-grade="easy">Easy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TAB: Cài đặt -->
+<section class="tab-panel hidden" id="tab-settings">
+  <div class="layout layout-settings">
+    <section class="panel settings-section" id="settings-review-timing">
+      <h2>Thời gian ôn lại</h2>
+      <p class="settings-help">
+        Từ mới hoặc từ vừa bấm Again sẽ xuất hiện lại sau khoảng thời gian bạn chọn cho từng mức.
+        Từ đã thuộc (bấm Good/Easy) thì các lần sau tự giãn cách theo ngày.
+      </p>
+      <div class="timing-rows">
+        <div class="timing-row" data-grade="again">
+          <span class="timing-label"><b>Again</b> <small>quên</small></span>
+          <input type="number" min="1" step="1" inputmode="numeric" aria-label="Again - số">
+          <select aria-label="Again - đơn vị">
+            <option value="minute">phút</option><option value="hour">giờ</option><option value="day">ngày</option>
+          </select>
+        </div>
+        <div class="timing-row" data-grade="hard">
+          <span class="timing-label"><b>Hard</b> <small>khó</small></span>
+          <input type="number" min="1" step="1" inputmode="numeric" aria-label="Hard - số">
+          <select aria-label="Hard - đơn vị">
+            <option value="minute">phút</option><option value="hour">giờ</option><option value="day">ngày</option>
+          </select>
+        </div>
+        <div class="timing-row" data-grade="good">
+          <span class="timing-label"><b>Good</b> <small>nhớ</small></span>
+          <input type="number" min="1" step="1" inputmode="numeric" aria-label="Good - số">
+          <select aria-label="Good - đơn vị">
+            <option value="minute">phút</option><option value="hour">giờ</option><option value="day">ngày</option>
+          </select>
+        </div>
+        <div class="timing-row" data-grade="easy">
+          <span class="timing-label"><b>Easy</b> <small>dễ</small></span>
+          <input type="number" min="1" step="1" inputmode="numeric" aria-label="Easy - số">
+          <select aria-label="Easy - đơn vị">
+            <option value="minute">phút</option><option value="hour">giờ</option><option value="day">ngày</option>
+          </select>
+        </div>
+      </div>
+      <div class="settings-actions">
+        <button type="button" class="btn btn-primary" id="timing-save-btn">Lưu</button>
+        <button type="button" class="btn" id="timing-reset-btn">Khôi phục mặc định</button>
+        <span class="form-msg" id="timing-msg"></span>
+      </div>
+    </section>
+  </div>
+</section>
+
+</div><!-- /.app-main -->
+</div><!-- /.app-shell -->
+
+<audio id="audio-player"></audio>
+
+<script type="module" src="/static/js/main.js"></script>
+</body>
+</html>

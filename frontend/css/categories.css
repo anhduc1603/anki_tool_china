@@ -1,0 +1,141 @@
+.layout-single { grid-template-columns: 1fr; max-width: 820px; }
+
+/* ---------- Quan ly danh muc (bang kieu danh sach deck cua Anki) ---------- */
+.category-add-row { display: flex; gap: 10px; margin-bottom: 8px; }
+.category-add-row input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  font-size: 15px;
+  font-family: inherit;
+}
+
+.deck-table { margin-top: 14px; }
+.deck-row {
+  display: grid;
+  grid-template-columns: 1fr 64px 64px 64px 40px;
+  align-items: center;
+  padding: 7px 10px;
+  border-radius: 10px;
+  font-size: 15px;
+}
+.deck-head {
+  font-size: 13px;
+  font-weight: 700;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  margin-bottom: 6px;
+}
+.deck-head span:not(:first-child) { text-align: right; }
+.deck-row:not(.deck-head):hover { background: #efeeea; }
+
+.deck-name { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.deck-indent { padding-left: 28px; }
+.deck-toggle, .deck-toggle-spacer {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  text-align: center;
+  line-height: 20px;
+}
+.deck-toggle {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+.deck-toggle:hover { color: var(--ink); }
+.deck-link {
+  border: none;
+  background: transparent;
+  padding: 2px 0;
+  font: inherit;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.deck-link:hover { text-decoration: underline; }
+.deck-uncategorized .deck-link { color: var(--muted); }
+
+.deck-count { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.count-new { color: #2f6fed; }
+.count-learn { color: #d63a3a; }
+.count-due { color: #1f9d55; }
+.deck-count.zero { color: #b5b5b5; font-weight: 400; }
+
+.deck-gear {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 16px;
+  padding: 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0;
+}
+.deck-row:hover .deck-gear, .deck-gear:focus-visible, .deck-gear[aria-expanded="true"] { opacity: 1; }
+@media (hover: none) { .deck-gear { opacity: 1; } }
+.deck-gear:hover { background: #e2e0da; color: var(--ink); }
+
+.gear-menu {
+  position: fixed;
+  z-index: 30;
+  min-width: 190px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+}
+.gear-menu button {
+  border: none;
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  font-size: 14px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.gear-menu button:hover { background: #f0efeb; }
+.gear-menu button.danger { color: var(--red-dark); }
+
+/* ---------- Panel gan tu vao danh muc ---------- */
+.assign-controls { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.assign-controls select {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 14px;
+  max-width: 100%;
+}
+.cat-word-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  padding: 7px 0;
+  border-bottom: 1px solid #f0efeb;
+}
+.cat-word-row .cat-word-hanzi { font-family: "Noto Sans SC", sans-serif; font-weight: 700; font-size: 18px; min-width: 40px; }
+.cat-word-row select {
+  margin-left: auto;
+  font-size: 13px;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  font-family: inherit;
+  max-width: 55%;
+}
+.cat-empty-hint { color: var(--muted); font-size: 13px; padding: 4px 0; }
+
