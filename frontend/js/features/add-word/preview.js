@@ -1,8 +1,12 @@
 // Xem truoc the Anki (mat truoc/mat sau) theo noi dung dang nhap trong form.
 
 import { playAudioForText } from "../../shared/audio.js";
+import { createExampleView } from "../../shared/example-view.js";
+import { renderWordPinyin } from "../../shared/pinyin.js";
 
 export function createPreview(els, imageFields) {
+  const exampleView = createExampleView(els.pExample, els.togglePinyinBtn, els.exampleAudioBtn);
+
   function update() {
     const hanzi = els.hanzi.value.trim() || "你好";
     const pinyin = els.pinyin.value.trim() || "nǐ hǎo";
@@ -10,11 +14,11 @@ export function createPreview(els, imageFields) {
     const example = els.example.value.trim();
 
     els.pHanziFront.textContent = hanzi;
-    els.pPinyinFront.textContent = pinyin;
+    els.pPinyinFront.innerHTML = renderWordPinyin(pinyin);
     els.pHanziBack.textContent = hanzi;
-    els.pPinyinBack.textContent = pinyin;
+    els.pPinyinBack.innerHTML = renderWordPinyin(pinyin);
     els.pMeaning.textContent = meaning;
-    els.pExample.textContent = example;
+    exampleView.render(example, els.examplePinyin.value, { keepState: true });
 
     const mnemonicUrl = imageFields.currentUrl("mnemonic");
     els.pMnemonic.innerHTML = mnemonicUrl ? `<img src="${mnemonicUrl}" alt="goi nho">` : "";
@@ -38,6 +42,11 @@ export function createPreview(els, imageFields) {
   els.playAudioBtn.addEventListener("click", (e) => {
     e.stopPropagation();
     playAudioForText(els.hanzi.value);
+  });
+
+  els.togglePinyinBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    exampleView.toggle();
   });
 
   els.toggleGifBtn.addEventListener("click", (e) => {

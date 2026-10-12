@@ -19,7 +19,7 @@ from ankitool.constants.import_limits import (
 )
 from ankitool.errors import AppError, ValidationError
 from ankitool.repositories import word_repository
-from ankitool.services import word_service
+from ankitool.services import category_service, word_service
 
 STATUS_OK = "ok"
 STATUS_DUPLICATE = "duplicate"
@@ -66,7 +66,7 @@ def _detect_delimiter(text):
 
 def parse_csv(text):
     """Phan tich CSV -> (cac dong, canh bao). Moi dong:
-    {"row", "hanzi", "pinyin", "meaning", "example", "problem"}; row dem tu dong du lieu dau tien
+    {"row", "hanzi", "pinyin", "meaning", "example", "example_pinyin", "problem"}; row dem tu dong du lieu dau tien
     (khong tinh tieu de va dong trong); problem la ly do dong khong hop le (hoac None).
     Loi cau truc (rong, qua lon, thieu cot bat buoc, qua nhieu dong) -> ValidationError."""
     if len(text.encode("utf-8")) > IMPORT_MAX_BYTES:
@@ -115,6 +115,7 @@ def parse_csv(text):
                 "pinyin": cell("pinyin"),
                 "meaning": cell("meaning"),
                 "example": cell("example"),
+                "example_pinyin": cell("example_pinyin"),
                 "problem": messages.IMPORT_ROW_TOO_MANY_VALUES if extra_values else None,
             }
         )
@@ -148,10 +149,14 @@ def preview(csv_text):
             reason = messages.IMPORT_ROW_DUPLICATE_IN_FILE.format(first_row=first_row_of[r["hanzi"]])
         else:
             first_row_of[r["hanzi"]] = r["row"]
-        item = {k: r[k] for k in ("row", "hanzi", "pinyin", "meaning", "example")}
+        item = {k: r[k] for k in ("row", "hanzi", "pinyin", "meaning", "example", "example_pinyin")}
         item["status"] = status
         if reason:
             item["reason"] = reason
+        if status == STATUS_OK:
+            _, problem = word_service.normalize_example_pinyin(r["example"], r["example_pinyin"])
+            if problem:
+                item["notice"] = messages.IMPORT_ROW_PINYIN_IGNORED.format(reason=problem)
         rows.append(item)
         summary[status] += 1
     return {"rows": rows, "summary": summary, "warnings": warnings}
@@ -173,23 +178,25 @@ def _read_batch(rows):
                 "row": number,
                 **{
                     key: _normalize(item[key]) if isinstance(item.get(key), str) else ""
-                    for key in ("hanzi", "pinyin", "meaning", "example")
+                    for key in ("hanzi", "pinyin", "meaning", "example", "example_pinyin")
                 },
             }
         )
     return batch
 
 
-def import_rows(rows):
+def import_rows(rows, category_id=None):
     """Nhap 1 lo dong (toi da IMPORT_BATCH_MAX_ROWS), tuan tu theo thu tu nhan duoc.
 
+    category_id: danh muc con dich cua ca lo (rong = chua phan loai); sai -> ValidationError, khong ghi gi.
     Server kiem tra lai thieu truong va trung (voi DB va voi cac dong da nhap trong lo),
     khong tin ket qua xem truoc. Loi tung dong khong dung ca lo."""
     batch = _read_batch(rows)
+    category_id = category_service.clean_category_id(category_id)
     existing = word_repository.find_existing_hanzi([r["hanzi"] for r in batch if r["hanzi"]])
     created_row_of = {}
     results = []
-    summary = {STATUS_CREATED: 0, STATUS_DUPLICATE: 0, STATUS_INVALID: 0, STATUS_FAILED: 0}
+    summary = {STATUS_CREATED: 0, STATUS_DUPLICATE: 0, STATUS_INVALID: 0, STATUS_FAILED: 0, "pinyin_ignored": 0}
     for r in batch:
         result = {"row": r["row"]}
         if not _has_required_fields(r):
@@ -202,8 +209,12 @@ def import_rows(rows):
                 reason=messages.IMPORT_ROW_DUPLICATE_IN_FILE.format(first_row=created_row_of[r["hanzi"]]),
             )
         else:
+            # Kiem tra lai o server: pinyin vi du khong khop thi bo pinyin, van nhap tu
+            example_pinyin, problem = word_service.normalize_example_pinyin(r["example"], r["example_pinyin"])
             try:
-                word = word_service.create_word(r["hanzi"], r["pinyin"], r["meaning"], r["example"])
+                word = word_service.create_word(
+                    r["hanzi"], r["pinyin"], r["meaning"], r["example"], category_id, example_pinyin
+                )
             except AppError as e:
                 result.update(status=STATUS_FAILED, reason=messages.IMPORT_ROW_FAILED.format(error=e.message))
             except Exception:
@@ -211,6 +222,9 @@ def import_rows(rows):
             else:
                 created_row_of[r["hanzi"]] = r["row"]
                 result.update(status=STATUS_CREATED, id=word["id"])
+                if problem:
+                    result["notice"] = messages.IMPORT_ROW_PINYIN_IGNORED.format(reason=problem)
+                    summary["pinyin_ignored"] += 1
         summary[result["status"]] += 1
         results.append(result)
     return {"results": results, "summary": summary}

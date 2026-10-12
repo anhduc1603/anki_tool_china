@@ -4,11 +4,10 @@ va cham diem. Luat SM-2 nam o scheduler.py; thoi gian hoc tuy chinh o settings_s
 """
 
 from ankitool.constants import messages
-from ankitool.constants.scopes import UNCATEGORIZED
 from ankitool.constants.srs import GRADES
 from ankitool.errors import NotFoundError, ValidationError
 from ankitool.repositories import category_repository, word_repository
-from ankitool.services import scheduler, settings_service
+from ankitool.services import category_service, scheduler, settings_service
 from ankitool.utils.clock import due_after, now_iso
 
 
@@ -16,19 +15,10 @@ def _list_due(scope):
     """scope: None/"" = tat ca; "uncategorized" = tu chua phan loai;
     id danh muc con = chi danh muc do; id danh muc cha = tat ca danh muc con."""
     now = now_iso()
-    if scope == UNCATEGORIZED:
-        return word_repository.list_due(now, uncategorized_only=True)
-    if scope:
-        category = category_repository.get(scope)
-        if category is None:
-            return []
-        if category["parent_id"] is None:
-            child_ids = category_repository.list_child_ids(scope)
-            if not child_ids:
-                return []
-            return word_repository.list_due(now, category_ids=child_ids)
-        return word_repository.list_due(now, category_ids=[scope])
-    return word_repository.list_due(now)
+    category_ids, uncategorized_only = category_service.resolve_scope(scope)
+    if category_ids is not None and not category_ids:
+        return []
+    return word_repository.list_due(now, category_ids=category_ids, uncategorized_only=uncategorized_only)
 
 
 def get_due_words(scope=None):

@@ -9,7 +9,7 @@ word_bp = Blueprint("word", __name__)
 
 @word_bp.route("/api/words", methods=["GET"])
 def list_words():
-    return jsonify(word_service.list_words())
+    return jsonify(word_service.list_words(request.args.get("category_id") or None))
 
 
 @word_bp.route("/api/words", methods=["POST"])

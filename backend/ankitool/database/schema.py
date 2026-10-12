@@ -60,6 +60,8 @@ def _upgrade_words_schema(conn):
     data/ankitool.db duoc tao tu truoc khi tinh nang nay ton tai)."""
     existing_cols = {row["name"] for row in conn.execute("PRAGMA table_info(words)")}
 
+    if "example_pinyin" not in existing_cols:
+        conn.execute("ALTER TABLE words ADD COLUMN example_pinyin TEXT NOT NULL DEFAULT ''")
     if "category_id" not in existing_cols:
         conn.execute("ALTER TABLE words ADD COLUMN category_id TEXT REFERENCES categories(id)")
     if "ease_factor" not in existing_cols:

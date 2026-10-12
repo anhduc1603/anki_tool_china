@@ -76,6 +76,7 @@
 .import-table td.cell-hanzi { font-family: "Noto Sans SC", sans-serif; font-size: 16px; font-weight: 600; white-space: nowrap; }
 .import-table td.cell-example { max-width: 260px; white-space: pre-line; color: var(--muted); }
 .import-table td.cell-reason { color: var(--muted); }
+.import-table .cell-notice { color: #8a5a00; font-size: 12px; margin-top: 3px; }
 .import-table tr.row-duplicate { background: #fff8e6; }
 .import-table tr.row-invalid,
 .import-table tr.row-failed { background: #fdf0ee; }

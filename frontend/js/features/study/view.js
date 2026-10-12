@@ -1,6 +1,8 @@
 // Giao dien tab Hoc: cac phan tu DOM va cac trang thai hien thi (the / dang cho / het tu).
 
 import { GRADES } from "../../constants.js";
+import { createExampleView } from "../../shared/example-view.js";
+import { renderWordPinyin } from "../../shared/pinyin.js";
 import { formatInterval } from "./formatters.js";
 
 export function createStudyView() {
@@ -19,6 +21,8 @@ export function createStudyView() {
     pinyinBack: document.getElementById("study-pinyin-back"),
     meaning: document.getElementById("study-meaning"),
     example: document.getElementById("study-example"),
+    togglePinyinBtn: document.getElementById("study-toggle-pinyin-btn"),
+    exampleAudioBtn: document.getElementById("study-example-audio-btn"),
     mnemonic: document.getElementById("study-mnemonic"),
     toggleGifBtn: document.getElementById("study-toggle-gif-btn"),
     gif: document.getElementById("study-gif"),
@@ -27,6 +31,8 @@ export function createStudyView() {
     grades: document.getElementById("study-grades"),
     gradeButtons: document.querySelectorAll("#study-grades [data-grade]"),
   };
+
+  const exampleView = createExampleView(els.example, els.togglePinyinBtn, els.exampleAudioBtn);
 
   const timeEls = Object.fromEntries(
     GRADES.map((g) => [g, document.getElementById(`study-time-${g}`)])
@@ -59,11 +65,11 @@ export function createStudyView() {
       els.bar.classList.remove("hidden");
 
       els.hanziFront.textContent = word.hanzi;
-      els.pinyinFront.textContent = word.pinyin;
+      els.pinyinFront.innerHTML = renderWordPinyin(word.pinyin);
       els.hanziBack.textContent = word.hanzi;
-      els.pinyinBack.textContent = word.pinyin;
+      els.pinyinBack.innerHTML = renderWordPinyin(word.pinyin);
       els.meaning.textContent = word.meaning;
-      els.example.textContent = word.example || "";
+      exampleView.render(word.example, word.example_pinyin); // pinyin an moi khi sang the moi
       els.mnemonic.innerHTML = word.mnemonic_filename
         ? `<img src="/media/${word.mnemonic_filename}" alt="goi nho">`
         : "";
@@ -93,6 +99,10 @@ export function createStudyView() {
       els.flipCard.classList.add("flipped");
       els.showBtn.classList.add("hidden");
       els.grades.classList.remove("hidden");
+    },
+
+    toggleExamplePinyin() {
+      exampleView.toggle();
     },
 
     toggleGif() {

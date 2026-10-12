@@ -60,7 +60,10 @@ export function initReviewTiming() {
     const { ok, data } = await updateSettings({ [SETTING_KEY]: timing });
     if (!ok) {
       els.rows.forEach((row) =>
-        row.classList.toggle("invalid", !(timing[row.dataset.grade].value >= 1))
+        row.classList.toggle(
+          "invalid",
+          !(timing[row.dataset.grade].value >= Number(row.querySelector("input").min || 1))
+        )
       );
       return setMsg(data.error || "Không lưu được cài đặt.", "error");
     }

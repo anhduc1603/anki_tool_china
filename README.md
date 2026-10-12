@@ -63,6 +63,14 @@ data/                            # dữ liệu chạy thật (không đưa lên 
 openspec/                        # đặc tả và các thay đổi (OpenSpec)
 ```
 
+## Cài đặt thời gian ôn lại (tab Cài đặt)
+
+Với từ mới hoặc từ vừa quên (đang ở giai đoạn học), mỗi mức chấm điểm quay lại sau một khoảng bạn chọn; từ đã thuộc (Good/Easy) thì các lần sau tự giãn theo ngày. Mặc định: Again 1 phút, Hard 6 phút, Good 10 phút, Easy 4 ngày.
+
+- **Again** đặt được theo **giây/phút/giờ/ngày**, số từ **0** trở lên; `0` nghĩa là quay lại ngay (xuống cuối hàng). Hard/Good/Easy chỉ dùng phút/giờ/ngày, số từ 1 trở lên. Tối đa 365 ngày.
+- Trong phiên học, thẻ vừa chấm **Again** luôn đứng sau các thẻ đang đến hạn; khi không còn thẻ nào khác, thẻ Again chờ sớm nhất được **hiện ngay** (không đếm ngược) nên các thẻ Again cứ xoay vòng cho tới khi bạn chấm mức khác. Thẻ Hard/Good/Easy vẫn đếm ngược đúng thời gian đã đặt, và thẻ hẹn từ 1 giờ trở lên thì rời phiên.
+- Nhãn trên nút hiển thị đúng thời gian (`0s`, `15s`, `1m`, `10m`, `4d`...). Đặt Again quá ngắn (0 giây) nghĩa là bạn thấy lại đúng từ vừa quên ngay; nếu muốn có thẻ khác xen vào, đặt 10–30 giây.
+
 ## File đính kèm và dọn dẹp
 
 Mỗi từ có thể kèm ảnh gợi nhớ, GIF nét viết (bạn tải lên) và audio phát âm (app tự sinh, tên file theo chữ Hán nên hai từ cùng chữ Hán dùng chung một audio). Chúng nằm trong `data/media/`.
@@ -75,7 +83,7 @@ App tự dọn để không để lại file thừa:
 - Việc xóa file chỉ là bước phụ: nếu file đang bị khóa hay đã mất thì thao tác xóa/sửa từ vẫn thành công.
 - Xóa là **xóa hẳn**, không có thùng rác: xóa nhầm từ thì ảnh tự tải lên cũng mất. Hãy sao lưu `data/` định kỳ.
 
-File mồ côi từ trước (không từ nào dùng, hoặc audio do nút nghe thử sinh ra) dọn bằng lệnh:
+File mồ côi từ trước (không từ nào dùng, hoặc audio do nút nghe thử và nút 🔊 câu ví dụ sinh ra; audio câu ví dụ là cache nên bị coi là mồ côi, xóa đi sẽ tự sinh lại khi bấm hoặc khi xuất) dọn bằng lệnh:
 
 ```bash
 python backend/cleanup_media.py                              # chỉ LIỆT KÊ (mặc định), không xóa gì
@@ -92,6 +100,24 @@ Lệnh dùng cùng thư mục dữ liệu với app (`ANKITOOL_DATA_DIR` nếu c
 - Màn hình hẹp (≤ 900px): menu là ngăn kéo, mặc định ẩn; ☰ mở ra đè lên nội dung, đóng khi chọn mục, bấm nền mờ hoặc nhấn `Esc`.
 - Trạng thái nằm ở class trên `#app-shell` (`sidebar-collapsed`, `sidebar-open`), phần hiển thị do `css/sidebar.css` lo; `core/sidebar.js` chỉ đổi class. Biến CSS `--sidebar-current-w` cho các phần tử cố định (thanh chấm điểm ở tab Học) nằm đúng trong vùng nội dung.
 
+## Pinyin câu ví dụ, màu theo thanh điệu và nút Ẩn/Hiện pinyin
+
+- Form thêm/sửa từ có ô **Pinyin câu ví dụ** (tùy chọn). Quy tắc: mỗi chữ Hán của câu ví dụ đúng **một âm tiết**, cách nhau bằng dấu cách, có dấu thanh, thanh nhẹ không dấu, **không dấu câu**; phần trong ngoặc `(...)` / `（...）` (bản dịch) không tính. Ví dụ: `她是我的老师。(Cô ấy là giáo viên của tôi.)` ↔ `tā shì wǒ de lǎo shī`. Số âm tiết không khớp số chữ Hán thì server từ chối và nêu cả hai số.
+- Ở mặt đáp án (xem trước, tab Học, thẻ Anki) câu ví dụ hiện dạng ruby: pinyin nhỏ nằm trên từng chữ Hán, chữ và pinyin cùng màu theo thanh; nút **🔤 Hiện pinyin / 🙈 Ẩn pinyin** bật tắt pinyin (mặc định **ẩn**, chữ vẫn có màu; sang thẻ mới lại ẩn). Từ không có pinyin ví dụ hiển thị như cũ và không có nút. Pinyin của từ chính (cả hai mặt) cũng tô màu theo thanh; chữ Hán của từ chính giữ nguyên màu.
+- Bảng màu (nền trắng, tương phản ≥ 4,5:1): thanh 1 đỏ `#C62828`, thanh 2 xanh lá `#2E7D32`, thanh 3 xanh dương `#1565C0`, thanh 4 tím `#7B1FA2`, thanh nhẹ xám `#616161`. Khai báo ở `frontend/css/base.css` (`--tone-1…5`) và `backend/ankitool/constants/pinyin.py` — đổi thì sửa cả hai.
+- **Nhập CSV**: cột tùy chọn `example_pinyin` (prompt cho AI đã yêu cầu cột này). Dòng có pinyin ví dụ không khớp vẫn được nhập nhưng **bỏ phần pinyin ví dụ**, có thông báo ở bước xem trước và ở báo cáo. CSV cũ (4 cột) vẫn nhập như trước. Nhập CSV bỏ qua từ đã có nên **không thể điền pinyin ví dụ hàng loạt cho từ cũ** — sửa từng từ ở form.
+- **Thẻ Anki (.apkg)**: kiểu thẻ, trường và template giữ nguyên; HTML có màu và nút ẩn/hiện nằm trong nội dung hai trường `Pinyin` và `Example` (style nội tuyến, nút dùng thủ thuật checkbox, không cần JS). GUID của thẻ vẫn tính từ giá trị gốc của từ như trước nên nhập lại vào Anki cập nhật thẻ cũ thay vì tạo thẻ trùng (Anki có cập nhật hay không còn tùy phiên bản; chưa kiểm chứng trên Anki thật, mới kiểm tra nội dung file). Sửa thẻ trong trình soạn thảo của Anki có thể làm hỏng HTML nội tuyến.
+- **Đọc cả câu ví dụ (🔊)**: ở mặt đáp án (xem trước và tab Học) có nút 🔊 cạnh nút Hiện/Ẩn pinyin, bấm thì đọc phần **tiếng Trung** của câu ví dụ (phần ngoài ngoặc `(...)`/`（...）`, nhiều dòng nối bằng dấu cách; bản dịch không được đọc; không có chữ Hán ngoài ngoặc thì không có nút). Audio sinh khi bấm (cần mạng, khoảng 1–3 giây, nút hiện ⏳), lưu thành file cache theo văn bản nên các lần sau phát ngay; không tự phát khi lật thẻ. Từ chính ở mặt đáp án không có nút này.
+- **Âm thanh câu ví dụ trong thẻ Anki**: `[sound:…]` nằm trong trường `Example` (cạnh nút Hiện pinyin; với ví dụ không có pinyin thì ở dòng dưới câu). Lúc xuất, app sinh audio các câu chưa có, chạy 5 luồng song song và dùng lại file đã sinh khi bạn bấm 🔊 trong app. Đo thực tế: 30 câu mới ≈ 17 giây (tuần tự ≈ 3 giây/câu); hàng trăm câu mới cùng lúc có thể chạm `--timeout 120` của gunicorn (xuất lại là xong vì file đã sinh được giữ; hoặc nâng `--timeout` trong `Dockerfile`). Thiếu mạng thì xuất vẫn thành công, chỉ các thẻ chưa có audio câu ví dụ không có âm thanh. Anki tự phát âm thanh khi hiện đáp án (theo cài đặt "tự phát" của deck), nên có thể nghe cả từ lẫn câu.
+- Mã dùng chung: `backend/ankitool/utils/pinyin.py` và `frontend/js/shared/pinyin.js` cài cùng một quy tắc ghép chữ ↔ âm tiết; sửa một bên thì sửa cả bên kia.
+
+## Danh sách từ theo danh mục và xuất `.apkg` (tab Thêm từ mới)
+
+- Ô **Xem theo danh mục** phía trên danh sách từ lọc theo: *Tất cả danh mục* (mặc định), *Chưa phân loại*, một danh mục cha "(tất cả)" (gồm mọi danh mục con) hoặc một danh mục con. Số từ ở danh sách và thanh trên cùng là số từ của phạm vi đang chọn.
+- Nút **Xuất file .apkg (N từ)** chỉ xuất đúng N từ đang hiện trong danh sách; chọn *Tất cả danh mục* để xuất toàn bộ. Tên bộ thẻ tự điền theo tên danh mục (trừ khi bạn đã tự gõ tên); mỗi tên deck có id riêng nên các danh mục khác nhau thành các deck riêng khi nhập vào Anki (tên mặc định `MyChineseDeck` giữ id cũ).
+- Form thêm/sửa từ có ô **Danh mục** (tùy chọn, chỉ danh mục con), tự chọn sẵn danh mục con đang lọc và được giữ lại sau khi lưu để nhập liên tiếp cho cùng một danh mục. Sửa từ có thể chuyển từ sang danh mục khác.
+- API: `GET /api/words?category_id=<…>` và `GET /api/export?deck_name=<…>&category_id=<…>`; `category_id` để trống = tất cả, `uncategorized`, id danh mục cha (gồm các con) hoặc id danh mục con (cùng quy ước với tab Học). Form `POST/PUT /api/words` nhận thêm `category_id` (rỗng = chưa phân loại; `PUT` không gửi trường này thì giữ nguyên danh mục).
+
 ## Nhập hàng loạt từ CSV (dùng AI để tạo sẵn nội dung)
 
 Ở tab **Thêm từ mới**, bấm **📥 Nhập từ CSV** để mở hộp thoại:
@@ -103,14 +129,14 @@ Lệnh dùng cùng thư mục dữ liệu với app (`ANKITOOL_DATA_DIR` nếu c
 
 Định dạng CSV:
 
-- Dòng đầu là tiêu đề với cột `hanzi`, `pinyin`, `meaning` (bắt buộc) và `example` (tùy chọn); không phân biệt hoa/thường và thứ tự cột. Cột lạ (như `gif`) bị bỏ qua và được báo.
+- Dòng đầu là tiêu đề với cột `hanzi`, `pinyin`, `meaning` (bắt buộc) và `example`, `example_pinyin` (tùy chọn); không phân biệt hoa/thường và thứ tự cột. Cột lạ (như `gif`) bị bỏ qua và được báo.
 - Dấu phân cách `,` `;` hoặc Tab; trường có dấu phân cách, dấu nháy kép hay xuống dòng phải đặt trong ngoặc kép `"..."` (nháy kép bên trong viết `""`). Dòng có nhiều giá trị hơn số cột (thường do quên ngoặc kép) bị báo lỗi thay vì nhập sai.
 - UTF-8 (BOM được chấp nhận); dòng trống bị bỏ qua.
 - Giới hạn: 500 dòng dữ liệu và 1 MB mỗi lần nhập.
 
-Quy tắc: từ trùng chữ Hán với từ đã có (hoặc với dòng trước đó trong cùng file) bị **bỏ qua**, từ cũ không bao giờ bị ghi đè; từ nhập vào giống từ thêm bằng form (có âm thanh, là từ mới đến hạn học ngay, chưa phân loại, chưa có ảnh — gán danh mục ở tab Danh mục, thêm ảnh bằng cách sửa từ). Nhập lại cùng một file là an toàn vì chỉ những từ chưa có mới được tạo. Âm thanh sinh qua mạng (edge-tts), thực đo khoảng 0,7 giây mỗi từ mới.
+Quy tắc: từ trùng chữ Hán với từ đã có (hoặc với dòng trước đó trong cùng file) bị **bỏ qua**, từ cũ không bao giờ bị ghi đè; từ nhập vào giống từ thêm bằng form (có âm thanh, là từ mới đến hạn học ngay, chưa có ảnh — thêm ảnh bằng cách sửa từ; mặc định chưa phân loại, hoặc nằm trong danh mục con bạn chọn ở ô **Nhập vào danh mục** của hộp thoại, áp cho cả lần nhập). Nhập lại cùng một file là an toàn vì chỉ những từ chưa có mới được tạo. Âm thanh sinh qua mạng (edge-tts), thực đo khoảng 0,7 giây mỗi từ mới.
 
-API (dùng bởi giao diện): `POST /api/words/import/preview` (`{"csv": "..."}` → `rows`, `summary`, `warnings`; không ghi gì) và `POST /api/words/import` (`{"rows": [{"row","hanzi","pinyin","meaning","example"}]}`, tối đa 20 dòng mỗi lần → `results`, `summary`). Mọi kiểm tra (thiếu trường, trùng, giới hạn) do server làm.
+API (dùng bởi giao diện): `POST /api/words/import/preview` (`{"csv": "..."}` → `rows`, `summary`, `warnings`; không ghi gì) và `POST /api/words/import` (`{"rows": [{"row","hanzi","pinyin","meaning","example"}], "category_id": "<id danh mục con, tùy chọn>"}`, tối đa 20 dòng mỗi lần → `results`, `summary`). Mọi kiểm tra (thiếu trường, trùng, giới hạn) do server làm.
 
 ## Quy tắc phụ thuộc
 

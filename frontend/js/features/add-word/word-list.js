@@ -1,21 +1,28 @@
-// Danh sach tu da luu: hien thi, nghe, sua (nap vao form), xoa.
+// Danh sach tu da luu (theo pham vi danh muc dang loc): hien thi, nghe, sua (nap vao form), xoa.
 
 import { deleteWord, listWords } from "../../api/words-api.js";
 import { playAudioForText } from "../../shared/audio.js";
 import { escapeHtml } from "../../shared/dom.js";
 import { state } from "./state.js";
 
-// onEdit(word): nap tu vao form; onDeleted(id): bao form neu dang sua dung tu vua xoa
-export function createWordList(els, { onEdit, onDeleted }) {
+// onEdit(word): nap tu vao form; onDeleted(id): bao form neu dang sua dung tu vua xoa;
+// onRendered(): bao sau moi lan ve (de cap nhat nut xuat)
+export function createWordList(els, { onEdit, onDeleted, onRendered }) {
+  let requestSeq = 0; // chi lan nap moi nhat duoc ve (bo ket qua cu ve tre)
+
   function render() {
     const words = state.words;
     els.wordCount.textContent = `${words.length} từ`;
+    els.listCount.textContent = `${words.length} từ`;
     els.wordList.innerHTML = "";
     if (words.length === 0) {
-      els.emptyHint.classList.remove("hidden");
-      return;
+      const hint = document.createElement("p");
+      hint.className = "empty-hint";
+      hint.textContent = state.scope
+        ? "Chưa có từ nào trong danh mục này."
+        : "Chưa có từ nào. Thêm từ đầu tiên ở form phía trên nhé.";
+      els.wordList.appendChild(hint);
     }
-    els.emptyHint.classList.add("hidden");
     words.forEach((w) => {
       const row = document.createElement("div");
       row.className = "word-row";
@@ -42,11 +49,15 @@ export function createWordList(els, { onEdit, onDeleted }) {
       });
       els.wordList.appendChild(row);
     });
+    onRendered();
   }
 
   async function refresh() {
-    const { data } = await listWords();
-    state.words = data;
+    const seq = ++requestSeq;
+    const scope = state.scope;
+    const { data } = await listWords(scope);
+    if (seq !== requestSeq) return;
+    state.words = Array.isArray(data) ? data : [];
     render();
   }
 

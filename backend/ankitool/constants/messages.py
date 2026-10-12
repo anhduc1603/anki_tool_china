@@ -11,6 +11,15 @@ UNKNOWN_IMAGE_EXTENSION = "(khong ro)"
 AUDIO_ERROR = "Loi sinh audio: {error}"
 MISSING_TTS_TEXT = "Thieu noi dung can doc."
 
+EXAMPLE_PINYIN_MISMATCH = (
+    "Pinyin câu ví dụ không khớp: câu ví dụ có {chars} chữ Hán (không tính phần trong ngoặc) "
+    "nhưng pinyin có {syllables} âm tiết. Mỗi chữ Hán cần đúng một âm tiết, cách nhau bằng dấu cách."
+)
+EXAMPLE_PINYIN_INVALID = (
+    "Pinyin câu ví dụ có ký tự không hợp lệ: \"{token}\". Chỉ dùng chữ cái pinyin (có dấu thanh), "
+    "cách nhau bằng dấu cách, không có dấu câu hay chữ số."
+)
+
 # --- danh muc ---
 MISSING_CATEGORY_NAME = "Thieu ten danh muc."
 CATEGORY_NOT_FOUND = "Khong tim thay danh muc."
@@ -35,6 +44,8 @@ TIMING_INCOMPLETE = "Phai co du 4 muc thoi gian: again, hard, good, easy."
 TIMING_ITEM_INVALID = "Thoi gian '{grade}' khong hop le."
 TIMING_VALUE_INVALID = "Thoi gian '{grade}' phai la so nguyen tu 1 tro len."
 TIMING_UNIT_INVALID = "Don vi cua '{grade}' phai la phut, gio hoac ngay."
+TIMING_VALUE_INVALID_AGAIN = "Thoi gian '{grade}' phai la so nguyen tu 0 tro len."
+TIMING_UNIT_INVALID_AGAIN = "Don vi cua '{grade}' phai la giay, phut, gio hoac ngay."
 TIMING_TOO_LONG = "Thoi gian '{grade}' khong duoc vuot qua 365 ngay."
 
 # --- nhap tu hang loat tu CSV (thong bao moi: tieng Viet co dau vi hien thi truc tiep cho nguoi dung) ---
@@ -53,5 +64,6 @@ IMPORT_ROW_DUPLICATE_IN_FILE = "Trùng với dòng {first_row} trong cùng file.
 IMPORT_ROW_TOO_MANY_VALUES = (
     "Có nhiều giá trị hơn số cột trong tiêu đề — có thể thiếu dấu ngoặc kép quanh trường chứa dấu phẩy."
 )
+IMPORT_ROW_PINYIN_IGNORED = "{reason} Từ vẫn được nhập nhưng không kèm pinyin câu ví dụ."
 IMPORT_ROW_FAILED = "Không lưu được dòng này: {error}"
 IMPORT_ROW_FAILED_UNKNOWN = "Không lưu được dòng này do lỗi không xác định."

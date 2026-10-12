@@ -8,13 +8,14 @@ from ankitool.constants import messages
 from ankitool.constants.media import DEFAULT_DECK_NAME
 from ankitool.errors import AppError, ValidationError
 from ankitool.integrations.anki import deck_builder
-from ankitool.repositories import word_repository
+from ankitool.services import word_service
 
 
-def build_export(deck_name=None):
-    """Dung file .apkg tam, tra ve (duong_dan_file, ten_file_tai_ve)."""
+def build_export(deck_name=None, scope=None):
+    """Dung file .apkg tam chua cac tu trong pham vi danh muc (None/"" = tat ca),
+    tra ve (duong_dan_file, ten_file_tai_ve)."""
     deck_name = (deck_name or DEFAULT_DECK_NAME).strip() or DEFAULT_DECK_NAME
-    words = word_repository.list_all()
+    words = word_service.list_words(scope)
     if not words:
         raise ValidationError(messages.EMPTY_WORD_LIST)
 
@@ -33,6 +34,7 @@ def build_export(deck_name=None):
                 "pinyin": w["pinyin"],
                 "meaning": w["meaning"],
                 "example": w.get("example", ""),
+                "example_pinyin": w.get("example_pinyin", ""),
                 "mnemonic_path": mnemonic_path,
                 "gif_path": gif_path,
             }

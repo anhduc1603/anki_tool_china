@@ -12,7 +12,9 @@ from ankitool.constants.review_settings import (
     MAX_TIMING_SECONDS,
     REVIEW_TIMING_GRADES,
     SETTING_REVIEW_TIMING,
+    TIMING_MIN_VALUE_BY_GRADE,
     TIMING_UNIT_SECONDS,
+    TIMING_UNITS_BY_GRADE,
 )
 from ankitool.errors import ValidationError
 from ankitool.repositories import setting_repository
@@ -26,10 +28,14 @@ def _timing_item_error(grade, item):
     if not isinstance(item, dict):
         return messages.TIMING_ITEM_INVALID.format(grade=grade)
     value, unit = item.get("value"), item.get("unit")
-    if isinstance(value, bool) or not isinstance(value, int) or value < 1:
-        return messages.TIMING_VALUE_INVALID.format(grade=grade)
-    if unit not in TIMING_UNIT_SECONDS:
-        return messages.TIMING_UNIT_INVALID.format(grade=grade)
+    min_value = TIMING_MIN_VALUE_BY_GRADE[grade]
+    allows_seconds = "second" in TIMING_UNITS_BY_GRADE[grade]  # chi Again: thong bao rieng (nhac giay / tu 0)
+    if isinstance(value, bool) or not isinstance(value, int) or value < min_value:
+        message = messages.TIMING_VALUE_INVALID_AGAIN if allows_seconds else messages.TIMING_VALUE_INVALID
+        return message.format(grade=grade)
+    if unit not in TIMING_UNITS_BY_GRADE[grade]:
+        message = messages.TIMING_UNIT_INVALID_AGAIN if allows_seconds else messages.TIMING_UNIT_INVALID
+        return message.format(grade=grade)
     if value * TIMING_UNIT_SECONDS[unit] > MAX_TIMING_SECONDS:
         return messages.TIMING_TOO_LONG.format(grade=grade)
     return None

@@ -97,6 +97,18 @@
       </div>
 
       <div class="field">
+        <label for="example-pinyin">Pinyin câu ví dụ <span class="hint">(mỗi chữ Hán một âm tiết, cách nhau dấu cách, không dấu câu; bỏ trống nếu không cần)</span></label>
+        <input type="text" id="example-pinyin" name="example_pinyin" placeholder="nǐ hǎo hěn gāo xìng rèn shi nǐ" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label for="word-category">Danh mục <span class="hint">(tùy chọn, chỉ danh mục con)</span></label>
+        <select id="word-category" name="category_id">
+          <option value="">Chưa phân loại</option>
+        </select>
+      </div>
+
+      <div class="field">
         <label for="mnemonic">Ảnh gợi nhớ <span class="hint">(hiện luôn ở mặt đáp án)</span></label>
         <input type="file" id="mnemonic" name="mnemonic" accept=".gif,.png,.jpg,.jpeg,.webp,.svg">
         <div class="paste-zone" id="mnemonic-paste-zone" tabindex="0">📋 Hoặc bấm vào đây rồi dán ảnh (Ctrl+V)</div>
@@ -131,17 +143,25 @@
       <h2>Danh sách từ đã thêm</h2>
       <button type="button" class="btn btn-icon" id="import-open-btn" title="Nhập nhiều từ từ file CSV (do AI tạo)">📥 Nhập từ CSV</button>
     </div>
-    <div id="word-list" class="word-list">
-      <p class="empty-hint" id="empty-hint">Chưa có từ nào. Thêm từ đầu tiên ở form phía trên nhé.</p>
+    <div class="list-filter">
+      <div class="field">
+        <label for="list-scope">Xem theo danh mục</label>
+        <select id="list-scope">
+          <option value="">Tất cả danh mục</option>
+          <option value="uncategorized">Chưa phân loại</option>
+        </select>
+      </div>
+      <span class="list-count" id="list-count">0 từ</span>
     </div>
+    <div id="word-list" class="word-list"></div>
 
     <div class="export-box">
       <div class="field">
         <label for="deck-name">Tên bộ thẻ (deck)</label>
         <input type="text" id="deck-name" value="MyChineseDeck" autocomplete="off">
       </div>
-      <button type="button" id="export-btn" class="btn btn-export">⬇ Xuất file .apkg</button>
-      <p class="export-hint">Sau khi tải xong: mở Anki → File → Import... → chọn file vừa tải.</p>
+      <button type="button" id="export-btn" class="btn btn-export">⬇ Xuất file .apkg <span id="export-count"></span></button>
+      <p class="export-hint">File chỉ chứa các từ đang hiện trong danh sách (theo danh mục đã chọn). Sau khi tải xong: mở Anki → File → Import... → chọn file vừa tải.</p>
     </div>
   </section>
 
@@ -166,6 +186,10 @@
             <hr>
             <div class="meaning" id="p-meaning">xin chào</div>
             <div class="example" id="p-example"></div>
+            <div class="example-tools">
+              <button type="button" class="example-audio-btn hidden" id="example-audio-btn" title="Đọc cả câu ví dụ" aria-label="Đọc cả câu ví dụ">🔊</button>
+              <button type="button" class="toggle-gif-btn toggle-pinyin-btn hidden" id="toggle-pinyin-btn">🔤 Hiện pinyin</button>
+            </div>
             <div class="mnemonic" id="p-mnemonic"></div>
             <button type="button" class="toggle-gif-btn hidden" id="toggle-gif-btn">✍️ Xem cách viết nét</button>
             <div class="gif-content" id="p-gif"></div>
@@ -246,6 +270,10 @@
               <hr>
               <div class="meaning" id="study-meaning">xin chào</div>
               <div class="example" id="study-example"></div>
+              <div class="example-tools">
+                <button type="button" class="example-audio-btn hidden" id="study-example-audio-btn" title="Đọc cả câu ví dụ" aria-label="Đọc cả câu ví dụ">🔊</button>
+                <button type="button" class="toggle-gif-btn toggle-pinyin-btn hidden" id="study-toggle-pinyin-btn">🔤 Hiện pinyin</button>
+              </div>
               <div class="mnemonic" id="study-mnemonic"></div>
               <button type="button" class="toggle-gif-btn hidden" id="study-toggle-gif-btn">✍️ Xem cách viết nét</button>
               <div class="gif-content" id="study-gif"></div>
@@ -290,13 +318,14 @@
       <p class="settings-help">
         Từ mới hoặc từ vừa bấm Again sẽ xuất hiện lại sau khoảng thời gian bạn chọn cho từng mức.
         Từ đã thuộc (bấm Good/Easy) thì các lần sau tự giãn cách theo ngày.
+        Với <b>Again</b> bạn có thể đặt vài giây hoặc 0 để thẻ quay lại ngay (khi hết thẻ khác, thẻ Again được hiện luôn, không phải đợi).
       </p>
       <div class="timing-rows">
         <div class="timing-row" data-grade="again">
           <span class="timing-label"><b>Again</b> <small>quên</small></span>
-          <input type="number" min="1" step="1" inputmode="numeric" aria-label="Again - số">
+          <input type="number" min="0" step="1" inputmode="numeric" aria-label="Again - số">
           <select aria-label="Again - đơn vị">
-            <option value="minute">phút</option><option value="hour">giờ</option><option value="day">ngày</option>
+            <option value="second">giây</option><option value="minute">phút</option><option value="hour">giờ</option><option value="day">ngày</option>
           </select>
         </div>
         <div class="timing-row" data-grade="hard">
@@ -360,6 +389,12 @@
       <div class="import-block">
         <h3>2. Đưa CSV vào</h3>
         <p class="import-help">Dán CSV (cả khối ```csv ... ``` cũng được) hoặc chọn file <code>.csv</code> lưu dạng UTF-8. Tối đa 500 dòng, 1 MB.</p>
+        <div class="field import-category">
+          <label for="import-category">Nhập vào danh mục <span class="hint">(áp cho tất cả từ của lần nhập này)</span></label>
+          <select id="import-category">
+            <option value="">Chưa phân loại</option>
+          </select>
+        </div>
         <textarea id="import-csv" rows="8" placeholder="hanzi,pinyin,meaning,example" spellcheck="false"></textarea>
         <div class="import-actions">
           <label class="btn btn-ghost import-file-label" for="import-file">📄 Chọn file CSV</label>

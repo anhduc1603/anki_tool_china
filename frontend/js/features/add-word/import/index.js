@@ -10,7 +10,8 @@ import { runImport } from "./run-import.js";
 const STEPS = ["input", "preview", "running", "report"];
 
 // onImported(): gọi khi đóng hộp thoại sau khi đã tạo được từ (để nạp lại danh sách từ)
-export function initImport({ onImported }) {
+// categorySelect: ô chọn danh mục con nhận từ; categoryLabel(): tên danh mục đang chọn ("" = chưa phân loại)
+export function initImport({ onImported, categorySelect, categoryLabel }) {
   const $ = (id) => document.getElementById(id);
   const els = {
     dialog: $("import-dialog"),
@@ -181,7 +182,9 @@ export function initImport({ onImported }) {
     els.cancelBtn.textContent = "Hủy";
     showStep("running");
 
-    const outcome = await runImport(rows, {
+    const categoryId = categorySelect.value; // đọc một lần: đổi ô chọn giữa chừng không làm lệch các lô
+    const categoryName = categoryLabel();
+    const outcome = await runImport(rows, categoryId, {
       isCancelled: () => state.cancelRequested,
       onProgress: (done, total) => {
         els.progress.max = total;
@@ -190,7 +193,7 @@ export function initImport({ onImported }) {
       },
     });
 
-    const counts = renderReport(els.report, data.rows, outcome);
+    const counts = renderReport(els.report, data.rows, outcome, categoryName);
     state.createdSinceRefresh += counts.created;
     state.finished = true;
     showStep("report");

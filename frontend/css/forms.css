@@ -12,6 +12,7 @@
 
 .field input[type="text"],
 .field textarea,
+.field select,
 .field input[type="file"] {
   width: 100%;
   padding: 10px 12px;
@@ -22,7 +23,7 @@
   background: #fdfcfb;
 }
 #hanzi { font-family: "Noto Sans SC", sans-serif; font-size: 20px; }
-.field input:focus, .field textarea:focus {
+.field input:focus, .field textarea:focus, .field select:focus {
   outline: none;
   border-color: var(--red);
   box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.12);

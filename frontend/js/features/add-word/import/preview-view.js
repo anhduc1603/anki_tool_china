@@ -26,8 +26,12 @@ export function renderPreview(els, data) {
         <td class="cell-hanzi">${escapeHtml(r.hanzi)}</td>
         <td>${escapeHtml(r.pinyin)}</td>
         <td>${escapeHtml(r.meaning)}</td>
-        <td class="cell-example">${escapeHtml(r.example)}</td>
-        <td>${statusCell(r.status, STATUS_LABEL[r.status], r.reason)}</td>
+        <td class="cell-example">${escapeHtml(r.example)}${
+          r.example_pinyin ? `<div class="cell-reason">${escapeHtml(r.example_pinyin)}</div>` : ""
+        }</td>
+        <td>${statusCell(r.status, STATUS_LABEL[r.status], r.reason)}${
+          r.notice ? `<div class="cell-notice">${escapeHtml(r.notice)}</div>` : ""
+        }</td>
       </tr>`
     )
     .join("");

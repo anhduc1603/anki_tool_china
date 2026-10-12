@@ -10,7 +10,9 @@ export_bp = Blueprint("export", __name__)
 
 @export_bp.route("/api/export", methods=["GET"])
 def export():
-    path, download_name = export_service.build_export(request.args.get("deck_name"))
+    path, download_name = export_service.build_export(
+        request.args.get("deck_name"), request.args.get("category_id") or None
+    )
     return send_file(
         path,
         as_attachment=True,

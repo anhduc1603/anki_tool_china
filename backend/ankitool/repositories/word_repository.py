@@ -10,6 +10,7 @@ WORD_FIELDS = (
     "pinyin",
     "meaning",
     "example",
+    "example_pinyin",
     "mnemonic_filename",
     "gif_filename",
     "audio_filename",
@@ -30,8 +31,23 @@ def _row_to_word(row):
 
 
 def list_all():
+    return list_in_scope()
+
+
+def list_in_scope(category_ids=None, uncategorized_only=False):
+    """Tu theo thu tu position. uncategorized_only: chi tu chua phan loai; category_ids: chi cac danh muc
+    nay ([] -> khong co tu nao); ca hai mac dinh -> tat ca."""
+    sql = "SELECT * FROM words"
+    params = []
+    if uncategorized_only:
+        sql += " WHERE category_id IS NULL"
+    elif category_ids is not None:
+        if not category_ids:
+            return []
+        sql += f" WHERE category_id IN ({','.join('?' * len(category_ids))})"
+        params = list(category_ids)
     with connect() as conn:
-        rows = conn.execute("SELECT * FROM words ORDER BY position").fetchall()
+        rows = conn.execute(sql + " ORDER BY position", params).fetchall()
         return [_row_to_word(r) for r in rows]
 
 
@@ -68,9 +84,10 @@ def insert(word):
         conn.execute(
             """
             INSERT INTO words
-                (id, hanzi, pinyin, meaning, example, mnemonic_filename, gif_filename, audio_filename,
-                 position, category_id, ease_factor, interval_days, repetitions, due_at, reviewed)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (id, hanzi, pinyin, meaning, example, example_pinyin, mnemonic_filename, gif_filename,
+                 audio_filename, position, category_id, ease_factor, interval_days, repetitions, due_at,
+                 reviewed)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 word["id"],
@@ -78,6 +95,7 @@ def insert(word):
                 word["pinyin"],
                 word["meaning"],
                 word.get("example", ""),
+                word.get("example_pinyin", ""),
                 word.get("mnemonic_filename"),
                 word.get("gif_filename"),
                 word.get("audio_filename"),

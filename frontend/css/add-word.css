@@ -31,6 +31,12 @@
 }
 .word-row .w-actions button:hover { background: #eee; }
 
+/* ---------- Loc danh sach theo danh muc ---------- */
+.list-filter { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 12px; }
+.list-filter .field { flex: 1; min-width: 0; margin-bottom: 0; }
+.list-count { font-size: 13px; color: var(--muted); white-space: nowrap; padding-bottom: 11px; }
+.import-category { margin-bottom: 10px; }
+
 /* ---------- Export box ---------- */
 .export-box { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
 .export-hint { font-size: 12px; color: var(--muted); margin: 8px 0 0; }
@@ -81,7 +87,29 @@
 .pinyin { font-size: 22px; color: var(--pinyin-color); margin-bottom: 6px; }
 .card-surface hr { border: none; border-top: 1px solid #ccc; margin: 14px 0; width: 100%; }
 .meaning { font-size: 24px; font-weight: bold; color: var(--meaning-color); margin-bottom: 8px; }
-.example { font-size: 16px; color: #444; margin-bottom: 12px; max-width: 90%; }
+.example { font-size: 16px; color: #444; margin-bottom: 12px; max-width: 90%; white-space: pre-line; }
+/* Cau vi du co pinyin: pinyin nho tren tung chu Han (cung mau thanh), an mac dinh */
+.example ruby { ruby-position: over; }
+/* An bang co chu 0 + visibility (khong dung display: ruby-text, trinh duyet cu bo qua gia tri nay) */
+.example rt { font-size: 0; visibility: hidden; font-weight: 600; }
+.example.show-pinyin rt { font-size: 0.7em; visibility: visible; }
+.example.show-pinyin { line-height: 2; }
+/* Hang nut duoi cau vi du: doc ca cau + an/hien pinyin (nut dang an khong chiem cho) */
+.example-tools { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.example-tools .toggle-gif-btn,
+.example-tools .example-audio-btn { margin-bottom: 10px; }
+.example-audio-btn {
+  border: none;
+  background: #eef2f7;
+  color: #2b6cb0;
+  font-size: 15px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.example-audio-btn:hover { background: #e2e9f2; }
+.example-audio-btn:disabled { cursor: progress; opacity: 0.7; }
 .mnemonic img { max-width: 200px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px; }
 
 .toggle-gif-btn {

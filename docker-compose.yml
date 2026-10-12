@@ -6,6 +6,8 @@ services:
     user: "1000:1000"
     environment:
       TZ: Asia/Ho_Chi_Minh
+      # user 1000 khong co thu muc home; gunicorn 26 ghi file dieu khien vao $HOME/.gunicorn
+      HOME: /tmp
     ports:
       - "8000:8000"
     volumes:

@@ -68,6 +68,7 @@ export function initStudy() {
   function renderCurrent() {
     clearWaitTimer();
     queue.promoteWaiting();
+    queue.promoteEarliestAgain(); // het the den han: the vua cham Again hien ngay, khong dem nguoc
 
     const due = queue.dueCount();
     const waiting = queue.waitingCount();
@@ -103,7 +104,7 @@ export function initStudy() {
         alert("Không chấm điểm được: " + (data.error || status));
         return;
       }
-      queue.completeCurrent(data);
+      queue.completeCurrent(data, gradeName);
       renderCurrent();
     } finally {
       state.busy = false;
@@ -122,6 +123,11 @@ export function initStudy() {
     e.stopPropagation();
     const word = queue.current();
     if (word) playAudioForText(word.hanzi);
+  });
+
+  els.togglePinyinBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    view.toggleExamplePinyin();
   });
 
   els.toggleGifBtn.addEventListener("click", (e) => {

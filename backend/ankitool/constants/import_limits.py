@@ -6,5 +6,5 @@ IMPORT_BATCH_MAX_ROWS = 20  # so dong toi da trong 1 yeu cau POST /api/words/imp
 
 # Cot bat buoc va tuy chon trong tieu de CSV (so khop khong phan biet hoa/thuong)
 IMPORT_REQUIRED_COLUMNS = ("hanzi", "pinyin", "meaning")
-IMPORT_OPTIONAL_COLUMNS = ("example",)
+IMPORT_OPTIONAL_COLUMNS = ("example", "example_pinyin")
 IMPORT_DELIMITERS = (",", ";", "\t")  # dau phan cach duoc nhan; hoa thi dung dau phay

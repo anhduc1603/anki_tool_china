@@ -16,4 +16,4 @@ def preview_import():
 @word_import_bp.route("/api/words/import", methods=["POST"])
 def import_words():
     data = request.get_json(silent=True) or {}
-    return jsonify(word_import_service.import_rows(data.get("rows")))
+    return jsonify(word_import_service.import_rows(data.get("rows"), data.get("category_id")))

@@ -4,10 +4,11 @@
 import { importWords } from "../../../api/words-api.js";
 import { IMPORT_BATCH_SIZE } from "../../../constants.js";
 
-// rows: các dòng hợp lệ từ xem trước ({row, hanzi, pinyin, meaning, example}).
+// rows: các dòng hợp lệ từ xem trước ({row, hanzi, pinyin, meaning, example, example_pinyin}).
+// categoryId: danh mục con nhận các từ ("" = chưa phân loại), dùng cho mọi lô.
 // onProgress(processed, total); isCancelled(): kiểm tra trước mỗi lô.
 // Trả về { results: [{row, status, reason?, id?}], notProcessed: [row...], cancelled, error }
-export async function runImport(rows, { onProgress, isCancelled }) {
+export async function runImport(rows, categoryId, { onProgress, isCancelled }) {
   const results = [];
   let processed = 0;
   let cancelled = false;
@@ -20,15 +21,16 @@ export async function runImport(rows, { onProgress, isCancelled }) {
       break;
     }
     const batch = rows.slice(start, start + IMPORT_BATCH_SIZE);
-    const payload = batch.map(({ row, hanzi, pinyin, meaning, example }) => ({
+    const payload = batch.map(({ row, hanzi, pinyin, meaning, example, example_pinyin }) => ({
       row,
       hanzi,
       pinyin,
       meaning,
       example,
+      example_pinyin,
     }));
     try {
-      const { ok, data } = await importWords(payload);
+      const { ok, data } = await importWords(payload, categoryId);
       if (!ok) {
         error = data.error || "Server từ chối yêu cầu nhập.";
         break;

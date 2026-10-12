@@ -11,8 +11,9 @@ const LABEL = {
   skipped: "Chưa xử lý",
 };
 
-// previewRows: tất cả dòng từ xem trước; outcome: kết quả của runImport()
-export function renderReport(els, previewRows, outcome) {
+// previewRows: tất cả dòng từ xem trước; outcome: kết quả của runImport();
+// categoryName: tên danh mục đã chọn khi nhập ("" = chưa phân loại)
+export function renderReport(els, previewRows, outcome, categoryName = "") {
   const byRow = new Map(outcome.results.map((r) => [r.row, r]));
   const notProcessed = new Set(outcome.notProcessed);
   const counts = { created: 0, duplicate: 0, invalid: 0, failed: 0, skipped: 0 };
@@ -43,6 +44,11 @@ export function renderReport(els, previewRows, outcome) {
     .join("");
 
   const notes = [];
+  const pinyinIgnored = outcome.results.filter((r) => r.status === "created" && r.notice).length;
+  if (pinyinIgnored > 0) {
+    notes.push(`${pinyinIgnored} từ được nhập không kèm pinyin câu ví dụ vì không khớp số chữ Hán.`);
+  }
+  if (counts.created > 0) notes.push(categoryName ? `Các từ mới nằm trong danh mục "${categoryName}".` : "Các từ mới chưa được phân loại.");
   if (outcome.cancelled) notes.push("Bạn đã hủy giữa chừng; các từ đã lưu vẫn được giữ.");
   if (outcome.error) notes.push("Dừng do lỗi: " + outcome.error);
   els.note.textContent = notes.join(" ");
