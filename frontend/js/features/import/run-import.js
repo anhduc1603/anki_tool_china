@@ -1,8 +1,8 @@
 // Gửi các dòng hợp lệ lên server theo từng lô nhỏ; có tiến trình và hủy giữa các lô.
 // Không dùng DOM: index.js lo giao diện.
 
-import { importWords } from "../../../api/words-api.js";
-import { IMPORT_BATCH_SIZE } from "../../../constants.js";
+import { importWords } from "../../api/words-api.js";
+import { IMPORT_BATCH_SIZE } from "../../constants.js";
 
 // rows: các dòng hợp lệ từ xem trước ({row, hanzi, pinyin, meaning, example, example_pinyin}).
 // categoryId: danh mục con nhận các từ ("" = chưa phân loại), dùng cho mọi lô.

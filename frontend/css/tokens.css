@@ -1,0 +1,85 @@
+/* Bien thiet ke dung chung cho moi trang (nap dau tien). Doi gia tri o day la doi ca app.
+   Mau thanh dieu (--tone-*) va mau bo dem (--state-*) giu nguyen vi khop file .apkg / Anki. */
+:root {
+  /* Be mat va chu */
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --surface-2: #f0f2f5;
+  --border: #e3e6eb;
+  --border-strong: #8a93a3; /* vien o nhap: >= 3:1 tren nen trang */
+  --text: #1b2330;
+  --text-muted: #5a6475;
+
+  /* Mau chu dao (chang) va dau "an" cua logo */
+  --primary: #4338ca;
+  --primary-hover: #372fa8;
+  --primary-soft: #eef0ff;
+  --on-primary: #ffffff;
+  --seal: #c0392b;
+
+  /* Ngu nghia */
+  --success: #1a7f37;
+  --success-soft: #ebf7ef;
+  --warning: #9a5b00;
+  --warning-soft: #fdf0cc;
+  --danger: #b42318;
+  --danger-soft: #fdecea;
+  --danger-hover: #912018;
+  --success-strong: #14532d;
+  --skeleton-hi: #e6e9ef;
+  --bar-new: #98a2b3;
+  --info: #2b6cb0;
+  --info-soft: #eaf1fb;
+
+  /* Mau thanh dieu tren nen trang (khop backend/ankitool/constants/pinyin.py) */
+  --tone-1: #c62828;
+  --tone-2: #2e7d32;
+  --tone-3: #1565c0;
+  --tone-4: #7b1fa2;
+  --tone-5: #616161;
+
+  /* Bo dem tab Hoc (giong Anki: New xanh duong, Learn do, Review xanh la) */
+  --state-new: #1565c0;
+  --state-learn: #c62828;
+  --state-review: #2e7d32;
+
+  /* Pinyin / nghia tren the */
+  --pinyin-color: #2b6cb0;
+  --meaning-color: #22863a;
+
+  /* Chu */
+  --font-ui: "Inter", "Segoe UI", Arial, sans-serif;
+  --font-han: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif;
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-md: 16px;
+  --text-lg: 18px;
+  --text-xl: 22px;
+  --text-2xl: 28px;
+  --text-3xl: 36px;
+
+  /* Khoang cach luoi 4px */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Bo goc, bong */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius: var(--radius-lg);
+  --shadow-1: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.08);
+  --shadow-2: 0 8px 24px rgba(16, 24, 40, 0.16);
+  --shadow: var(--shadow-1);
+
+  /* Vong focus (kem outline de van thay khi che do tuong phan cao) */
+  --focus-color: #4338ca;
+  --focus-ring: 0 0 0 3px rgba(67, 56, 202, 0.35);
+
+  /* Chieu cao toi thieu cua dieu khien tren man hinh cam ung */
+  --touch-target: 44px;
+}

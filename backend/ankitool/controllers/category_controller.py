@@ -32,6 +32,12 @@ def delete_category(category_id):
     return jsonify({"ok": True})
 
 
+@category_bp.route("/api/words/assign-category", methods=["POST"])
+def assign_words_category():
+    data = request.get_json(silent=True) or {}
+    return jsonify(category_service.assign_words(data.get("word_ids"), data.get("category_id")))
+
+
 @category_bp.route("/api/words/<word_id>/category", methods=["PUT"])
 def assign_word_category(word_id):
     data = request.get_json(silent=True) or {}

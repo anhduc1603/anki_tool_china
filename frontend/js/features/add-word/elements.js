@@ -1,4 +1,4 @@
-// Cac phan tu DOM cua tab Them tu moi (tra cuu 1 lan, truyen cho cac module con).
+// Cac phan tu DOM cua trang Them / sua tu (tra cuu 1 lan, truyen cho cac module con).
 
 export function queryElements() {
   const $ = (id) => document.getElementById(id);
@@ -15,14 +15,7 @@ export function queryElements() {
     cancelBtn: $("cancel-edit-btn"),
     formMsg: $("form-msg"),
     listenBtn: $("listen-btn"),
-    wordList: $("word-list"),
-    wordCount: $("word-count"),
-    listCount: $("list-count"),
-    listScope: $("list-scope"),
     wordCategory: $("word-category"),
-    exportCount: $("export-count"),
-    deckName: $("deck-name"),
-    exportBtn: $("export-btn"),
     flipCard: $("flip-card"),
     flipTip: $("flip-tip"),
     pHanziFront: $("p-hanzi-front"),

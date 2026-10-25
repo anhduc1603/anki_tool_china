@@ -1,0 +1,125 @@
+/* ---------- Trang Tu vung: cay danh muc + bang tu ---------- */
+/* Trang Tu vung rong hon cac trang khac de bang tu (nhieu cot) vua man hinh */
+.library { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: var(--space-5); align-items: start; max-width: 1800px; }
+.library-cats { position: sticky; top: 72px; max-height: calc(100vh - 96px); overflow-y: auto; padding: var(--space-4); }
+.library-main { min-width: 0; }
+.library-select { display: none; }
+
+/* Cay danh muc */
+.cat-list { display: flex; flex-direction: column; gap: 2px; }
+.cat-row { display: flex; align-items: center; gap: 2px; border-radius: var(--radius-sm); }
+.cat-row.is-child { padding-left: 28px; }
+.cat-toggle, .cat-toggle-spacer { width: 28px; height: 32px; flex: none; display: inline-flex; align-items: center; justify-content: center; }
+.cat-toggle { border: none; background: transparent; color: var(--text-muted); border-radius: var(--radius-sm); cursor: pointer; padding: 0; }
+.cat-toggle:hover { background: var(--surface-2); color: var(--text); }
+.cat-toggle .icon { width: 16px; height: 16px; transition: transform 0.15s ease; }
+.cat-toggle[aria-expanded="true"] .icon { transform: rotate(90deg); }
+.cat-item {
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--space-2); min-height: 36px; padding: 0 var(--space-3);
+  border: none; border-radius: var(--radius-sm); background: transparent; color: var(--text);
+  font: 500 var(--text-sm)/1.2 var(--font-ui); text-align: left; cursor: pointer;
+}
+.cat-item:hover { background: var(--surface-2); }
+.cat-item[aria-current="true"] { background: var(--primary-soft); color: var(--primary); font-weight: 700; }
+.cat-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cat-count { font-size: var(--text-xs); color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.cat-item[aria-current="true"] .cat-count { color: var(--primary); }
+.cat-gear { width: 32px; height: 32px; flex: none; display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent; color: var(--text-muted); border-radius: var(--radius-sm); cursor: pointer; opacity: 0; }
+.cat-row:hover .cat-gear, .cat-gear:focus-visible, .cat-gear[aria-expanded="true"] { opacity: 1; }
+@media (hover: none) { .cat-gear { opacity: 1; } }
+.cat-gear:hover { background: var(--surface-2); color: var(--text); }
+.cat-divider { height: 1px; background: var(--border); margin: var(--space-2) 0; }
+
+/* Menu hanh dong cua danh muc (gear-menu) */
+.gear-menu {
+  position: fixed; z-index: 60; min-width: 200px; padding: var(--space-2);
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-2); display: flex; flex-direction: column;
+}
+.gear-menu button {
+  border: none; background: transparent; text-align: left; font: inherit; font-size: var(--text-sm);
+  padding: 10px var(--space-3); border-radius: var(--radius-sm); cursor: pointer; color: var(--text);
+}
+.gear-menu button:hover, .gear-menu button:focus-visible { background: var(--surface-2); }
+.gear-menu button.danger { color: var(--danger); }
+
+/* Thanh cong cu */
+.library-toolbar { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: var(--space-3); margin-bottom: var(--space-4); }
+.library-heading { display: flex; align-items: baseline; gap: var(--space-3); min-width: 0; }
+.library-heading h2 { margin: 0; font-size: var(--text-xl); overflow-wrap: anywhere; }
+.toolbar-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.export-wrap { position: relative; }
+
+/* Chon nhieu tu + thanh thao tac */
+.cell-select { width: 44px; padding-right: 0 !important; }
+.cell-select input { width: 18px; height: 18px; margin: 0; accent-color: var(--primary); cursor: pointer; vertical-align: middle; }
+.word-table tr.is-selected td { background: var(--primary-soft); }
+.select-all-label { display: none; }
+.bulk-bar {
+  position: sticky; top: 64px; z-index: 12; display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-3);
+  margin-bottom: var(--space-3); padding: var(--space-2) var(--space-4);
+  background: var(--surface); border: 1px solid var(--primary); border-radius: var(--radius-md); box-shadow: var(--shadow-2);
+}
+.bulk-count { font-weight: 700; color: var(--primary); margin-right: auto; }
+.bulk-bar .cat-select { width: auto; min-width: 180px; }
+
+/* Bang tu */
+.table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-1); overflow-x: auto; }
+.word-table th, .word-table td { vertical-align: middle; padding: 8px var(--space-2); }
+.word-table th:first-child, .word-table td:first-child { padding-left: var(--space-4); }
+/* Cot thao tac ghim o mep phai: luon thay nut Nghe/Sua/Xoa du bang rong den dau */
+.word-table th:last-child, .word-table td:last-child { position: sticky; right: 0; background: var(--surface); padding-right: var(--space-3); box-shadow: -8px 0 8px -8px rgba(16, 24, 40, 0.15); }
+.word-table tbody tr:hover td:last-child { background: var(--surface-2); }
+.cell-hanzi { font-family: var(--font-han); font-size: 22px; font-weight: 700; white-space: nowrap; }
+.cell-pinyin { color: var(--pinyin-color); white-space: nowrap; }
+.cell-meaning { min-width: 160px; }
+.cat-select { width: 100%; min-width: 110px; max-width: 200px; min-height: 36px; padding: 6px 10px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); font: inherit; font-size: var(--text-sm); }
+.row-actions { display: flex; gap: var(--space-1); justify-content: flex-end; }
+.word-table .btn-icon-only { color: var(--text-muted); }
+.word-table .btn-icon-only:hover { color: var(--text); background: var(--surface-2); }
+.word-table .btn-icon-only.row-delete:hover { color: var(--danger); background: var(--danger-soft); }
+
+#lib-state { margin-bottom: var(--space-4); }
+#lib-state:empty { display: none; }
+
+@media (max-width: 1100px) {
+  .library { grid-template-columns: 1fr; }
+  .library-cats { display: none; }
+  .library-select { display: block; }
+}
+
+/* Dien thoai: moi dong bang thanh mot the */
+@media (max-width: 600px) {
+  .table-wrap { background: transparent; border: none; box-shadow: none; overflow: visible; }
+  .word-table, .word-table tbody, .word-table tr, .word-table td { display: block; }
+  /* Dang the: chi giu o "Chon tat ca" cua dau bang */
+  .word-table thead, .word-table thead tr { display: block; }
+  .word-table thead th { display: none; }
+  .word-table thead th.cell-select { display: block; padding: 0 var(--space-1) var(--space-3) !important; width: auto; }
+  .word-table thead label { display: inline-flex; align-items: center; gap: var(--space-2); min-height: var(--touch-target); cursor: pointer; font-size: var(--text-sm); font-weight: 600; color: var(--text-muted); }
+  .select-all-label { display: inline; }
+  .word-table tr {
+    display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "sel word actions" "sel pinyin actions" "sel meaning meaning" "sel cat status";
+    gap: var(--space-1) var(--space-3); padding: var(--space-3) var(--space-4); margin-bottom: var(--space-3);
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);
+  }
+  .word-table tbody tr:hover { background: var(--surface); }
+  .word-table td { border: 0; padding: 0; }
+  .word-table th:last-child, .word-table td:last-child { position: static; box-shadow: none; background: transparent; padding-right: 0; }
+  .word-table th:first-child, .word-table td:first-child { padding-left: 0; }
+  .word-table .cell-select { grid-area: sel; width: auto; padding-right: var(--space-3) !important; }
+  .word-table tbody tr.is-selected { border-color: var(--primary); background: var(--primary-soft); }
+  .word-table tr.is-selected td { background: transparent; }
+  .word-table .cell-hanzi { grid-area: word; }
+  .word-table .cell-pinyin { grid-area: pinyin; }
+  .word-table .cell-meaning { grid-area: meaning; min-width: 0; }
+  .word-table .cell-cat { grid-area: cat; }
+  .word-table .cell-status { grid-area: status; align-self: center; }
+  .word-table .cell-actions { grid-area: actions; align-self: start; }
+  .cat-select { max-width: none; min-height: var(--touch-target); }
+  .toolbar-actions { width: 100%; }
+  .bulk-bar { top: 60px; }
+  .bulk-bar .cat-select { flex: 1 1 160px; }
+  .toolbar-actions > .btn, .export-wrap { flex: 1 1 auto; }
+  .export-wrap .btn { width: 100%; }
+}

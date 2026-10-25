@@ -69,6 +69,22 @@ def assign_word(word_id, category_id):
     word_repository.set_category(word_id, category_id)
 
 
+BULK_ASSIGN_MAX = 1000
+
+
+def assign_words(word_ids, category_id):
+    """Gan nhieu tu vao 1 danh muc con (category_id rong/None = bo gan) trong mot lan: cung doi hoac khong tu nao doi.
+    Id khong khop tu nao bi bo qua va duoc dem. Tra {"updated": n, "missing": m}."""
+    if not isinstance(word_ids, list) or not word_ids or not all(isinstance(i, str) and i.strip() for i in word_ids):
+        raise ValidationError(messages.BULK_ASSIGN_INVALID_LIST)
+    ids = list(dict.fromkeys(i.strip() for i in word_ids))  # bo trung, giu thu tu
+    if len(ids) > BULK_ASSIGN_MAX:
+        raise ValidationError(messages.BULK_ASSIGN_TOO_MANY.format(limit=BULK_ASSIGN_MAX))
+    target = clean_category_id(category_id)  # sai danh muc -> loi, chua ghi gi
+    updated = word_repository.set_category_many(ids, target)
+    return {"updated": updated, "missing": len(ids) - updated}
+
+
 def clean_category_id(value):
     """Gia tri category_id do nguoi dung gui (form/JSON): rong -> None (chua phan loai);
     co gia tri -> phai la danh muc con hop le, neu khong -> ValidationError."""

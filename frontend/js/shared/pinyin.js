@@ -92,6 +92,62 @@ export function alignExample(example, syllables) {
   return segments;
 }
 
+// ---- So sanh pinyin go vao voi pinyin dung (tab Hoc, che do go dap an) ----
+
+const TONE_MARK_RE = /[̀́̄̌]/g;
+
+// Khoa so sanh cua 1 ky tu: chu cai thuong khong dau thanh (u+dau cham doi = "v", nhu go "v" cho ü);
+// "" neu khong phai chu cai (khoang trang, dau cau...).
+function letterKey(ch) {
+  const base = ch
+    .normalize("NFD")
+    .replace(TONE_MARK_RE, "")
+    .replace(/ü/gi, "v")
+    .replace(/ɡ/g, "g") // g 1 tang trong pinyin in
+    .toLowerCase();
+  return /^[a-z]$/.test(base) ? base : "";
+}
+
+// So khop theo ky tu (day con chung dai nhat), bo qua dau thanh, hoa/thuong, khoang trang, v == ü.
+// Tra ve { full, typed: [{ch, state}], expected: [{ch, state}] } voi state: "good" | "bad" (chi o typed)
+// | "missed" (chi o expected) | "neutral" (ky tu khong phai chu cai).
+export function comparePinyin(typed, expected) {
+  const a = Array.from((typed || "").normalize("NFC")).map((ch) => ({ ch, key: letterKey(ch) }));
+  const b = Array.from((expected || "").normalize("NFC")).map((ch) => ({ ch, key: letterKey(ch) }));
+  const ai = a.map((e, i) => (e.key ? i : -1)).filter((i) => i >= 0);
+  const bi = b.map((e, i) => (e.key ? i : -1)).filter((i) => i >= 0);
+
+  // dp[i][j] = do dai LCS cua ai[i..] va bi[j..]
+  const dp = Array.from({ length: ai.length + 1 }, () => new Array(bi.length + 1).fill(0));
+  for (let i = ai.length - 1; i >= 0; i--) {
+    for (let j = bi.length - 1; j >= 0; j--) {
+      dp[i][j] = a[ai[i]].key === b[bi[j]].key ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+    }
+  }
+  const matchedA = new Set();
+  const matchedB = new Set();
+  let i = 0;
+  let j = 0;
+  while (i < ai.length && j < bi.length) {
+    if (a[ai[i]].key === b[bi[j]].key && dp[i][j] === dp[i + 1][j + 1] + 1) {
+      matchedA.add(ai[i]);
+      matchedB.add(bi[j]);
+      i++;
+      j++;
+    } else if (dp[i + 1][j] >= dp[i][j + 1]) {
+      i++;
+    } else {
+      j++;
+    }
+  }
+  const full = ai.length > 0 && ai.length === bi.length && matchedA.size === ai.length;
+  return {
+    full,
+    typed: a.map((e, idx) => ({ ch: e.ch, state: !e.key ? "neutral" : matchedA.has(idx) ? "good" : "bad" })),
+    expected: b.map((e, idx) => ({ ch: e.ch, state: !e.key ? "neutral" : matchedB.has(idx) ? "good" : "missed" })),
+  };
+}
+
 // Pinyin cua tu chinh: moi am tiet 1 mau theo thanh (HTML da escape)
 export function renderWordPinyin(pinyin) {
   const tokens = (pinyin || "").normalize("NFC").split(/\s+/).filter(Boolean);

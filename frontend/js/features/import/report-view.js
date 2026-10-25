@@ -1,6 +1,6 @@
 // Báo cáo cuối: số liệu từng loại và lý do của từng dòng không được tạo.
 
-import { escapeHtml } from "../../../shared/dom.js";
+import { escapeHtml } from "../../shared/dom.js";
 import { statusCell } from "./preview-view.js";
 
 const LABEL = {

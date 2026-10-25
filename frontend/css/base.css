@@ -1,31 +1,7 @@
-:root {
-  --red: #c0392b;
-  --red-dark: #962d22;
-  --ink: #222;
-  --muted: #6b7280;
-  --bg: #f4f2ee;
-  --panel: #ffffff;
-  --border: #e5e1da;
-  --pinyin-color: #2b6cb0;
-  --meaning-color: #22863a;
-  /* Mau theo thanh dieu tren nen trang (khop backend/ankitool/constants/pinyin.py) */
-  --tone-1: #C62828;
-  --tone-2: #2E7D32;
-  --tone-3: #1565C0;
-  --tone-4: #7B1FA2;
-  --tone-5: #616161;
-  --radius: 14px;
-  --shadow: 0 2px 10px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
+/* Nen tang: reset, tien ich, bo cuc luoi dung chung. Bien thiet ke nam o tokens.css, thanh phan o components.css. */
 * { box-sizing: border-box; }
 
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--ink);
-  font-family: "Inter", "Segoe UI", Arial, sans-serif;
-}
+body { margin: 0; }
 
 .hidden { display: none !important; }
 
@@ -39,8 +15,8 @@ body {
 /* ---------- Layout ---------- */
 .layout {
   max-width: 1180px;
-  margin: 24px auto;
-  padding: 0 24px 60px;
+  margin: var(--space-6) auto;
+  padding: 0 var(--space-6) 60px;
   display: grid;
   grid-template-columns: 1.15fr 0.85fr;
   gap: 22px;
@@ -49,16 +25,11 @@ body {
 @media (max-width: 900px) {
   .layout { grid-template-columns: 1fr; }
 }
-
-.panel {
-  background: var(--panel);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border);
-  padding: 22px 24px;
-}
-.panel h2 {
-  margin: 0 0 14px;
-  font-size: 17px;
+@media (max-width: 600px) {
+  .layout { padding: 0 var(--space-4) 60px; margin-top: var(--space-4); }
 }
 
+/* Ket qua go dap an (xanh = dung, do = go sai, xam = thieu), nen nhat de de thay */
+.type-good { color: #1b5e20; background: #e3f4e8; }
+.type-bad { color: #b71c1c; background: #fdecea; }
+.type-missed { color: #424242; background: #e0e0e0; }

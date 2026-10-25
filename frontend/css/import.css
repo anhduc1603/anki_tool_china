@@ -1,7 +1,3 @@
-/* ---------- Nut nhap CSV o dau danh sach tu ---------- */
-.list-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
-.list-heading h2 { margin: 0; }
-
 /* ---------- Hop thoai nhap tu CSV ---------- */
 .import-dialog {
   width: min(920px, calc(100vw - 24px));
@@ -9,8 +5,8 @@
   padding: 0;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: var(--panel);
-  color: var(--ink);
+  background: var(--surface);
+  color: var(--text);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
 }
 .import-dialog[open] { display: flex; flex-direction: column; }
@@ -30,7 +26,7 @@
   height: 34px;
   border: 1px solid var(--border);
   border-radius: 9px;
-  background: var(--panel);
+  background: var(--surface);
   font-size: 15px;
   cursor: pointer;
 }
@@ -41,7 +37,7 @@
 
 .import-block + .import-block { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border); }
 .import-block h3 { margin: 0 0 6px; font-size: 15px; }
-.import-help { margin: 0 0 10px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+.import-help { margin: 0 0 10px; font-size: 13px; color: var(--text-muted); line-height: 1.5; }
 .import-help code { background: var(--bg); padding: 1px 5px; border-radius: 4px; }
 
 .import-dialog textarea {
@@ -55,9 +51,9 @@
   line-height: 1.5;
   resize: vertical;
 }
-.import-dialog textarea:focus { outline: 2px solid rgba(192, 57, 43, 0.35); border-color: var(--red); }
+.import-dialog textarea:focus { outline: none; border-color: var(--primary); box-shadow: var(--focus-ring); }
 .import-prompt-details { margin-top: 10px; font-size: 13px; }
-.import-prompt-details summary { cursor: pointer; color: var(--muted); }
+.import-prompt-details summary { cursor: pointer; color: var(--text-muted); }
 .import-prompt-details textarea { margin-top: 8px; background: var(--bg); }
 
 .import-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 12px; }
@@ -65,7 +61,7 @@
 .import-file-label { display: inline-block; }
 
 .import-summary { margin: 0 0 10px; font-size: 14px; font-weight: 600; }
-.import-warnings { margin: 0 0 10px; padding-left: 20px; font-size: 13px; color: #8a5a00; }
+.import-warnings { margin: 0 0 10px; padding-left: 20px; font-size: 13px; color: var(--warning); }
 .import-warnings:empty { display: none; }
 
 .import-table-wrap { max-height: 46vh; overflow: auto; border: 1px solid var(--border); border-radius: 10px; }
@@ -73,21 +69,21 @@
 .import-table th,
 .import-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
 .import-table th { position: sticky; top: 0; background: var(--bg); font-weight: 600; z-index: 1; }
-.import-table td.cell-hanzi { font-family: "Noto Sans SC", sans-serif; font-size: 16px; font-weight: 600; white-space: nowrap; }
-.import-table td.cell-example { max-width: 260px; white-space: pre-line; color: var(--muted); }
-.import-table td.cell-reason { color: var(--muted); }
-.import-table .cell-notice { color: #8a5a00; font-size: 12px; margin-top: 3px; }
-.import-table tr.row-duplicate { background: #fff8e6; }
+.import-table td.cell-hanzi { font-family: var(--font-han); font-size: 16px; font-weight: 600; white-space: nowrap; }
+.import-table td.cell-example { max-width: 260px; white-space: pre-line; color: var(--text-muted); }
+.import-table td.cell-reason { color: var(--text-muted); }
+.import-table .cell-notice { color: var(--warning); font-size: 12px; margin-top: 3px; }
+.import-table tr.row-duplicate { background: var(--warning-soft); }
 .import-table tr.row-invalid,
-.import-table tr.row-failed { background: #fdf0ee; }
+.import-table tr.row-failed { background: var(--danger-soft); }
 
 .chip { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
 .chip-ok,
-.chip-created { background: #e3f4e8; color: #1f7a3d; }
-.chip-duplicate { background: #fdf0cc; color: #8a5a00; }
+.chip-created { background: var(--success-soft); color: var(--success); }
+.chip-duplicate { background: var(--warning-soft); color: var(--warning); }
 .chip-invalid,
-.chip-failed { background: #fbdcd7; color: var(--red-dark); }
-.chip-skipped { background: #eceae5; color: var(--muted); }
+.chip-failed { background: var(--danger-soft); color: var(--danger); }
+.chip-skipped { background: var(--surface-2); color: var(--text-muted); }
 
 .import-progress { display: block; width: 100%; height: 14px; }
 .import-stats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
@@ -97,5 +93,7 @@
   .import-dialog { width: calc(100vw - 12px); max-height: calc(100vh - 12px); }
   .import-head { padding: 12px 14px; }
   .import-body { padding: 14px; }
-  .list-heading { flex-wrap: wrap; }
 }
+
+.import-category { margin-bottom: 10px; }
+.import-book { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--border); }

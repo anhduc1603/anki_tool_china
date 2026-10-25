@@ -1,26 +1,33 @@
 // Hộp thoại nhập hàng loạt từ CSV: nhập liệu + prompt -> xem trước -> nhập từng lô -> báo cáo.
 
-import { previewImport } from "../../../api/words-api.js";
-import { IMPORT_MAX_BYTES } from "../../../constants.js";
-import { buildPrompt, copyPrompt } from "./prompt.js";
+import { previewImport } from "../../api/words-api.js";
+import { IMPORT_MAX_BYTES } from "../../constants.js";
+import { store } from "../../core/store.js";
+import { allChildren, parentsOf, childrenOf } from "../../core/word-scope.js";
+import { escapeHtml } from "../../shared/dom.js";
+import { BOOK_PROMPT, buildPrompt, copyPrompt } from "./prompt.js";
 import { renderPreview } from "./preview-view.js";
 import { renderReport } from "./report-view.js";
 import { runImport } from "./run-import.js";
 
 const STEPS = ["input", "preview", "running", "report"];
 
-// onImported(): gọi khi đóng hộp thoại sau khi đã tạo được từ (để nạp lại danh sách từ)
-// categorySelect: ô chọn danh mục con nhận từ; categoryLabel(): tên danh mục đang chọn ("" = chưa phân loại)
-export function initImport({ onImported, categorySelect, categoryLabel }) {
+// onImported(): gọi khi đóng hộp thoại sau khi đã tạo được từ (để nạp lại dữ liệu các trang)
+// Trả về { open }: mở hộp thoại từ bất kỳ trang nào (Từ vựng, Tổng quan, Thêm từ).
+export function initImport({ onImported }) {
   const $ = (id) => document.getElementById(id);
+  const categorySelect = $("import-category");
+  const categoryLabel = () => (categorySelect.value ? categorySelect.selectedOptions[0].textContent : "");
   const els = {
     dialog: $("import-dialog"),
-    openBtn: $("import-open-btn"),
     closeBtn: $("import-close-btn"),
     steps: Object.fromEntries(STEPS.map((s) => [s, $(`import-step-${s}`)])),
     words: $("import-words"),
     copyBtn: $("import-copy-btn"),
     copyMsg: $("import-copy-msg"),
+    copyBookBtn: $("import-copy-book-btn"),
+    copyBookMsg: $("import-copy-book-msg"),
+    bookPromptText: $("import-book-prompt-text"),
     promptText: $("import-prompt-text"),
     csv: $("import-csv"),
     file: $("import-file"),
@@ -61,7 +68,26 @@ export function initImport({ onImported, categorySelect, categoryLabel }) {
 
   // ---- Mở / đóng ----
 
+  // Ô chọn danh mục con: lấy từ kho dữ liệu; chọn sẵn danh mục con đang chọn ở trang Từ vựng (nếu có)
+  function fillCategories() {
+    let html = '<option value="">Chưa phân loại</option>';
+    parentsOf(store.categories).forEach((parent) => {
+      const kids = childrenOf(store.categories, parent.id);
+      if (!kids.length) return;
+      html += `<optgroup label="${escapeHtml(parent.name)}">`;
+      kids.forEach((child) => {
+        html += `<option value="${child.id}">${escapeHtml(child.name)}</option>`;
+      });
+      html += "</optgroup>";
+    });
+    categorySelect.innerHTML = html;
+    const scoped = allChildren(store.categories).find((c) => c.id === store.libraryScope);
+    categorySelect.value = scoped ? scoped.id : "";
+  }
+
   function open() {
+    if (els.dialog.open) return;
+    fillCategories();
     if (state.finished) {
       // Lần nhập trước đã xong: bắt đầu lại từ đầu
       els.csv.value = "";
@@ -73,6 +99,7 @@ export function initImport({ onImported, categorySelect, categoryLabel }) {
     refreshPromptText();
     setMsg(els.inputMsg, "", "");
     setMsg(els.copyMsg, "", "");
+    setMsg(els.copyBookMsg, "", "");
     showStep("input");
     els.dialog.showModal();
   }
@@ -90,7 +117,6 @@ export function initImport({ onImported, categorySelect, categoryLabel }) {
     flushRefresh();
   }
 
-  els.openBtn.addEventListener("click", open);
   els.closeBtn.addEventListener("click", () => {
     if (state.step !== "running") closeDialog();
   });
@@ -116,6 +142,14 @@ export function initImport({ onImported, categorySelect, categoryLabel }) {
     els.promptText.value = buildPrompt(els.words.value);
   }
   els.words.addEventListener("input", refreshPromptText);
+
+  // Prompt chụp sách: cố định (không phụ thuộc danh sách từ), điền sẵn để xem/chép thủ công khi trình duyệt chặn sao chép
+  els.bookPromptText.value = BOOK_PROMPT;
+  els.copyBookBtn.addEventListener("click", async () => {
+    const result = await copyPrompt(BOOK_PROMPT, els.bookPromptText);
+    if (result === "ok") setMsg(els.copyBookMsg, "Đã sao chép. Dán vào AI cùng ảnh các trang sách của bài học.", "success");
+    else setMsg(els.copyBookMsg, "Không tự sao chép được: hãy chọn và sao chép nội dung prompt bên dưới.", "error");
+  });
 
   els.copyBtn.addEventListener("click", async () => {
     refreshPromptText();
@@ -204,4 +238,6 @@ export function initImport({ onImported, categorySelect, categoryLabel }) {
     els.cancelBtn.disabled = true;
     els.cancelBtn.textContent = "Đang hủy...";
   });
+
+  return { open };
 }

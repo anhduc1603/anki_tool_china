@@ -1,48 +1,18 @@
-/* ---------- Word list ---------- */
-.word-list { display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto; }
-.empty-hint { color: var(--muted); font-size: 13px; }
-
-.word-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: #fdfcfb;
-}
-.word-row .w-hanzi {
-  font-family: "Noto Sans SC", sans-serif;
-  font-size: 22px;
-  font-weight: 700;
-  min-width: 46px;
-}
-.word-row .w-info { flex: 1; min-width: 0; }
-.word-row .w-pinyin { color: var(--pinyin-color); font-size: 13px; }
-.word-row .w-meaning { font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.word-row .w-actions { display: flex; gap: 6px; }
-.word-row .w-actions button {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-size: 15px;
-  padding: 4px 6px;
-  border-radius: 6px;
-}
-.word-row .w-actions button:hover { background: #eee; }
-
-/* ---------- Loc danh sach theo danh muc ---------- */
-.list-filter { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 12px; }
-.list-filter .field { flex: 1; min-width: 0; margin-bottom: 0; }
-.list-count { font-size: 13px; color: var(--muted); white-space: nowrap; padding-bottom: 11px; }
-.import-category { margin-bottom: 10px; }
-
-/* ---------- Export box ---------- */
-.export-box { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
-.export-hint { font-size: 12px; color: var(--muted); margin: 8px 0 0; }
+/* ---------- Trang Them / sua tu ---------- */
+.add-main { min-width: 0; }
+.add-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-4); flex-wrap: wrap; }
+.add-head-text h2 { margin: 0; font-size: var(--text-xl); }
+.add-head-text p { margin: var(--space-1) 0 0; font-size: var(--text-sm); }
+.add-head-text .btn { margin-left: calc(-1 * var(--space-3)); margin-bottom: var(--space-1); }
+.form-group { margin: 0 0 var(--space-4); min-width: 0; }
+.form-group legend { padding: 0 var(--space-2); margin-left: calc(-1 * var(--space-2)); font-size: var(--text-md); font-weight: 700; }
+.image-details { margin-top: var(--space-3); border-top: 1px solid var(--border); padding-top: var(--space-3); }
+.image-details summary { cursor: pointer; font-weight: 600; font-size: var(--text-sm); display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-3); }
+.image-details summary .icon { color: var(--text-muted); }
+.preview-panel { position: sticky; top: 72px; }
 
 /* ---------- Preview panel (giong het the Anki that) ---------- */
-.preview-hint { font-size: 13px; color: var(--muted); margin-top: -8px; margin-bottom: 18px; }
+.preview-hint { font-size: 13px; color: var(--text-muted); margin-top: -8px; margin-bottom: 18px; }
 
 .flip-wrap { perspective: 1400px; }
 .flip-card {
@@ -75,7 +45,7 @@
   height: 100%;
   border-radius: 12px;
   border: 1px solid var(--border);
-  background: #fafafa;
+  background: var(--surface-2);
   padding: 24px;
   font-family: "Microsoft YaHei", "Noto Sans SC", "PingFang SC", Arial, sans-serif;
   text-align: center;
@@ -85,9 +55,9 @@
 
 .hanzi { font-size: 56px; font-weight: bold; margin-bottom: 8px; word-break: break-word; }
 .pinyin { font-size: 22px; color: var(--pinyin-color); margin-bottom: 6px; }
-.card-surface hr { border: none; border-top: 1px solid #ccc; margin: 14px 0; width: 100%; }
+.card-surface hr { border: none; border-top: 1px solid var(--border-strong); margin: 14px 0; width: 100%; }
 .meaning { font-size: 24px; font-weight: bold; color: var(--meaning-color); margin-bottom: 8px; }
-.example { font-size: 16px; color: #444; margin-bottom: 12px; max-width: 90%; white-space: pre-line; }
+.example { font-size: 16px; color: var(--text); margin-bottom: 12px; max-width: 90%; white-space: pre-line; }
 /* Cau vi du co pinyin: pinyin nho tren tung chu Han (cung mau thanh), an mac dinh */
 .example ruby { ruby-position: over; }
 /* An bang co chu 0 + visibility (khong dung display: ruby-text, trinh duyet cu bo qua gia tri nay) */
@@ -100,45 +70,69 @@
 .example-tools .example-audio-btn { margin-bottom: 10px; }
 .example-audio-btn {
   border: none;
-  background: #eef2f7;
-  color: #2b6cb0;
+  background: var(--info-soft);
+  color: var(--info);
   font-size: 15px;
   width: 34px;
   height: 34px;
   border-radius: 50%;
   cursor: pointer;
 }
-.example-audio-btn:hover { background: #e2e9f2; }
+.example-audio-btn:hover { background: var(--primary-soft); }
 .example-audio-btn:disabled { cursor: progress; opacity: 0.7; }
-.mnemonic img { max-width: 200px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px; }
+.mnemonic img { max-width: 200px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; }
 
 .toggle-gif-btn {
   margin-top: 4px;
   border: none;
-  background: #eef2f7;
-  color: #2b6cb0;
+  background: var(--info-soft);
+  color: var(--info);
   padding: 7px 16px;
   border-radius: 999px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
 }
-.toggle-gif-btn:hover { background: #e2e9f2; }
+.toggle-gif-btn:hover { background: var(--primary-soft); }
 
 .gif-content { display: none; margin-top: 12px; }
 .gif-content.open { display: block; }
-.gif-content img { max-width: 180px; border: 1px solid #ddd; border-radius: 8px; }
+.gif-content img { max-width: 180px; border: 1px solid var(--border); border-radius: 8px; }
 
 .audio-btn {
   margin-top: 6px;
   border: none;
-  background: #eef2f7;
-  color: #2b6cb0;
+  background: var(--info-soft);
+  color: var(--info);
   font-size: 20px;
   width: 44px;
   height: 44px;
   border-radius: 50%;
   cursor: pointer;
 }
-.audio-btn:hover { background: #e2e9f2; }
+.audio-btn:hover { background: var(--primary-soft); }
 
+
+/* ---------- Goi y anh minh hoa (khoi Anh goi nho) ---------- */
+.image-search { margin-bottom: var(--space-4); }
+.image-search-row { display: flex; align-items: flex-end; gap: var(--space-3); }
+.image-search-row .field { flex: 1; min-width: 0; margin-bottom: 0; }
+.image-search-row .btn { margin-bottom: 2px; }
+.image-search-status { min-height: 20px; margin: var(--space-2) 0; font-size: var(--text-sm); color: var(--text-muted); }
+.image-suggestions { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: var(--space-2); }
+.image-suggestions:empty { display: none; }
+.image-thumb {
+  display: flex; flex-direction: column; gap: 4px; padding: 0 0 var(--space-1);
+  border: 2px solid var(--border); border-radius: var(--radius-sm); background: var(--surface);
+  color: var(--text-muted); font: inherit; font-size: var(--text-xs); text-align: left; cursor: pointer; overflow: hidden;
+}
+.image-thumb:hover:not(:disabled) { border-color: var(--primary); }
+.image-thumb:disabled { opacity: 0.6; cursor: progress; }
+.image-thumb img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--surface-2); }
+.image-thumb span { padding: 0 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.image-credit { margin: var(--space-1) 0 0; font-size: var(--text-xs); color: var(--text-muted); }
+.image-credit a { color: var(--primary); }
+@media (max-width: 600px) {
+  .image-search-row { flex-direction: column; align-items: stretch; }
+  .image-search-row .btn { margin-bottom: 0; }
+}

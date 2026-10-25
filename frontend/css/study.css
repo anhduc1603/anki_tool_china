@@ -1,66 +1,152 @@
-/* ---------- Hoc (study) ---------- */
+/* ---------- Hoc (study): giao dien kieu Anki ---------- */
+/* Nen phang (khong vien the, khong lat 3D); dap an hien ngay duoi cau hoi; thanh duoi co dinh 3 vung. */
+
+.layout-study { grid-template-columns: 1fr; max-width: 960px; padding-bottom: 170px; }
+
+.study-panel {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: 18px 28px 40px;
+  min-height: calc(100vh - 220px);
+}
+
 .study-controls {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 18px;
+  margin-bottom: 8px;
 }
 .study-controls select {
+  min-height: 40px;
   padding: 8px 10px;
-  border: 1px solid var(--border);
-  border-radius: 9px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
   font-family: inherit;
   font-size: 14px;
 }
-.study-remaining { margin-left: auto; font-size: 13px; color: var(--muted); }
 
-.layout-study { grid-template-columns: 1fr; max-width: 960px; padding-bottom: 160px; }
-
-/* The hoc cao theo noi dung (khong cuon ben trong the). Moi quy tac nam duoi
-   .study-card de the xem truoc o tab "Them tu moi" khong bi doi. */
-.study-flip-wrap { max-width: 760px; margin: 0 auto; }
+/* ---- The: cau hoi tren, dap an duoi ---- */
+.study-card-wrap { max-width: 760px; margin: 0 auto; }
 .study-card {
-  min-height: max(440px, calc(100vh - 380px));
+  text-align: center;
   touch-action: pan-y;
   user-select: none;
+  font-family: "Microsoft YaHei", "Noto Sans SC", "PingFang SC", Arial, sans-serif;
 }
-/* Mat dang hien thi la position:relative nen no quyet dinh chieu cao the;
-   mat con lai nam absolute de khong keo cao the (mat truoc ngan khong bi keo bang mat sau). */
-.study-card .flip-inner { min-height: inherit; }
-.study-card .flip-face { position: absolute; inset: 0; min-height: inherit; }
-.study-card:not(.flipped) .flip-front,
-.study-card.flipped .flip-back { position: relative; inset: auto; }
-.study-card .card-surface { height: auto; overflow: visible; padding: 28px 32px; }
-.study-card .flip-back .hanzi { font-size: 40px; margin-bottom: 4px; }
-.study-card .flip-back .pinyin { font-size: 20px; }
-.study-card .flip-back .meaning { font-size: 22px; }
+.study-q { padding: 28px 0 8px; }
+.study-hint { margin: 16px 0 0; font-size: 13px; color: var(--text-muted); }
+/* Dap an con an: the bam duoc de hien dap an */
+/* Cu chi (cham/vuot) nhan tren ca man hinh hoc: cuon doc van duoc, khong boi den chu khi keo */
+#tab-study { touch-action: pan-y; }
+#tab-study .layout-study { user-select: none; }
+#tab-study .study-type-input { user-select: text; }
+#tab-study.answer-hidden .layout-study { cursor: pointer; }
+#tab-study.answer-hidden .study-controls { cursor: auto; }
+/* Phan hoi khi keo the: keo du xa sang phai = Good (xanh), sang trai = Again (do); co chu nen khong chi dua vao mau */
+.study-card { position: relative; border-radius: 14px; }
+.study-card[data-swipe]::after {
+  content: attr(data-swipe-label);
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 3px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--on-primary);
+  pointer-events: none;
+}
+.study-card[data-swipe="good"] { box-shadow: inset 0 0 0 3px var(--state-review); }
+.study-card[data-swipe="good"]::after { background: var(--state-review); }
+.study-card[data-swipe="again"] { box-shadow: inset 0 0 0 3px var(--state-learn); }
+.study-card[data-swipe="again"]::after { background: var(--state-learn); }
+.study-card .hanzi { font-size: 64px; margin-bottom: 8px; }
+.study-card .pinyin { font-size: 26px; margin-bottom: 8px; }
+.study-a { padding-bottom: 12px; }
+.study-a hr { border: none; border-top: 1px solid var(--border-strong); margin: 18px 0; width: 100%; }
+/* Hoat anh khi hien dap an: khoi dap an lat mo xuong tu canh tren (ban le quanh duong ke), cau hoi van dung yen */
+.study-a.flip-open {
+  transform-origin: top center;
+  animation: study-answer-flip 0.45s ease-out;
+}
+@keyframes study-answer-flip {
+  from { opacity: 0; transform: perspective(900px) rotateX(-90deg); }
+  to { opacity: 1; transform: perspective(900px) rotateX(0deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .study-a.flip-open { animation: none; }
+}
+.study-card .meaning { font-size: 28px; margin-bottom: 10px; }
 .study-card .example {
-  width: 100%;
-  max-width: 100%;
-  font-size: 15px;
+  max-width: 640px;
+  margin: 0 auto 10px;
+  font-size: 19px;
   line-height: 1.6;
-  text-align: left;
   white-space: pre-line;
 }
 .study-card .mnemonic img { max-width: 280px; }
 
+/* ---- Go dap an (pinyin) ---- */
+.study-type { margin-top: 12px; }
+.study-type-input {
+  width: min(420px, 92%);
+  font-size: 22px;
+  text-align: center;
+  padding: 10px 14px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-family: inherit;
+  user-select: text;
+}
+.study-type-input:focus { outline: none; border-color: var(--pinyin-color); box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.15); }
+.study-type-input:disabled { background: var(--surface-2); }
+.study-type-result { margin: 4px 0 12px; font-size: 26px; line-height: 1.5; }
+.type-line { margin: 2px 0; }
+.type-line .type-good,
+.type-line .type-bad,
+.type-line .type-missed { padding: 0 1px; border-radius: 3px; }
+.type-arrow { color: var(--text-muted); font-size: 18px; line-height: 1; }
+.type-empty { color: var(--text-muted); font-size: 16px; }
+
+/* ---- Trang thai rong / cho ---- */
 .study-empty {
   text-align: center;
   padding: 60px 20px;
   font-size: 16px;
-  color: var(--muted);
+  color: var(--text-muted);
 }
+.study-buried-note { margin-top: 12px; font-size: 14px; }
+.study-buried-note .btn { margin-left: 6px; }
 
 .study-waiting {
   text-align: center;
   padding: 60px 20px;
   font-size: 18px;
-  color: var(--ink);
+  color: var(--text);
 }
-.study-waiting b { font-variant-numeric: tabular-nums; color: var(--red); }
-.study-waiting-hint { margin-top: 8px; font-size: 13px; color: var(--muted); }
+.study-waiting b { font-variant-numeric: tabular-nums; color: var(--danger); }
+.study-waiting-hint { margin-top: 8px; font-size: 13px; color: var(--text-muted); }
 
-/* Thanh cham diem co dinh o day man hinh (nhu Anki) */
+/* ---- Thong bao nho (tu chuyen the, nhac cham diem) ---- */
+.study-toast {
+  position: fixed;
+  left: calc(var(--sidebar-current-w, 0px) + (100vw - var(--sidebar-current-w, 0px)) / 2);
+  bottom: 132px;
+  transform: translateX(-50%);
+  z-index: 25;
+  background: rgba(34, 34, 34, 0.92);
+  color: var(--on-primary);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  max-width: 90vw;
+  text-align: center;
+}
+
+/* ---- Thanh duoi co dinh: Sua tu | dem + Hien dap an / cham diem | Them (giong Anki) ---- */
 .study-bar {
   position: fixed;
   left: var(--sidebar-current-w, 0px); /* nam trong vung noi dung, ben phai menu trai */
@@ -68,34 +154,124 @@
   bottom: 0;
   z-index: 20; /* thap hon menu (40/50) va nen mo (45) */
   transition: left 0.2s ease;
-  background: rgba(255, 255, 255, 0.97);
+  background: rgba(255, 255, 255, 0.98);
   border-top: 1px solid var(--border);
-  box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.06);
-  padding: 10px 16px 14px;
+  padding: 8px 16px 14px;
 }
-.study-bar-inner { max-width: 760px; margin: 0 auto; }
-.study-show-btn {
-  width: 100%;
-  padding: 16px;
-  font-size: 16px;
-  border-radius: 12px;
-  background: var(--pinyin-color);
-  color: #fff;
+.study-bar-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  /* hai ben khong bao gio nho hon noi dung (nut Sua tu/Them), o giua co 560px va co lai khi hep */
+  grid-template-columns: minmax(max-content, 1fr) minmax(0, 560px) minmax(max-content, 1fr);
+  align-items: end;
+  gap: 10px;
 }
-.study-show-btn:hover { background: #245a95; }
+.study-bar-left { display: flex; justify-content: flex-start; }
+.study-bar-right { display: flex; justify-content: flex-end; align-items: end; gap: 8px; position: relative; }
+.study-bar-mid { display: flex; flex-direction: column; align-items: stretch; }
+
+.study-side-btn {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.study-side-btn:hover { background: var(--surface-2); }
+
+/* Bo dem: New xanh duong + Learn do + Review xanh la, gach chan loai the dang hien */
+.study-counts {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-variant-numeric: tabular-nums;
+  min-height: 20px;
+}
+.study-counts .count-new { color: var(--state-new); }
+.study-counts .count-learn { color: var(--state-learn); }
+.study-counts .count-review { color: var(--state-review); }
+.study-counts .count-zero { opacity: 0.4; }
+.study-counts .is-current { text-decoration: underline; text-underline-offset: 3px; }
+.study-counts .count-sep { color: var(--text-muted); font-weight: 400; margin: 0 3px; }
 
 .study-grades { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 .study-grade { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.study-grade-time { font-size: 12px; color: var(--muted); min-height: 16px; }
-.btn-grade { width: 100%; padding: 14px 8px; font-size: 15px; border-radius: 12px; }
-.btn-grade-again { background: #fdecea; color: var(--red-dark); }
-.btn-grade-again:hover { background: #fbdcd8; }
-.btn-grade-hard { background: #fdf0dc; color: #9a5b00; }
-.btn-grade-hard:hover { background: #fae4c2; }
-.btn-grade-good { background: #e3f3e8; color: var(--meaning-color); }
-.btn-grade-good:hover { background: #d3ecda; }
-.btn-grade-easy { background: #e3eefa; color: var(--pinyin-color); }
-.btn-grade-easy:hover { background: #d2e3f5; }
+.study-grade-time { font-size: 12px; color: var(--text-muted); min-height: 16px; }
+.btn-grade { width: 100%; padding: 12px 8px; font-size: 15px; border-radius: 12px; }
+.btn-grade-again { background: var(--danger-soft); color: var(--danger); }
+.btn-grade-hard { background: var(--warning-soft); color: var(--warning); }
+.btn-grade-good { background: var(--success-soft); color: var(--success); }
+.btn-grade-easy { background: var(--info-soft); color: var(--info); }
+.btn-grade:hover:not(:disabled) { filter: brightness(0.95); }
 
-.flip-tip { text-align: center; font-size: 12px; color: var(--muted); margin-top: 10px; }
+.study-auto-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--pinyin-color);
+  background: var(--info-soft);
+  border-radius: 999px;
+  padding: 4px 10px;
+  margin-bottom: 8px;
+  white-space: nowrap;
+}
 
+/* ---- Menu Them (mo len tren vi nam sat day) ---- */
+.study-more { position: relative; }
+.study-more-menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 6px);
+  min-width: 230px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.14);
+  padding: 6px;
+  z-index: 30;
+}
+.study-more-menu button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 9px 10px;
+  border-radius: 7px;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  color: var(--text);
+}
+.study-more-menu button:hover,
+.study-more-menu button:focus-visible { background: var(--surface-2); outline: none; }
+.study-more-menu .menu-check { width: 16px; color: var(--pinyin-color); font-weight: 700; }
+.study-more-menu .menu-text { flex: 1; }
+.study-more-menu kbd {
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--text-muted);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 1px 6px;
+}
+
+/* Man hinh hep: nut hai ben chi con bieu tuong (khac Anki: Anki an di) */
+@media (max-width: 583px) {
+  .side-label { display: none; }
+  .study-panel { padding: 12px 14px 30px; }
+  .study-bar-inner { grid-template-columns: auto minmax(0, 1fr) auto; gap: 6px; }
+  .study-bar { padding: 8px 10px 12px; }
+  .study-card .hanzi { font-size: 52px; }
+  .btn-grade { padding: 10px 4px; font-size: 14px; }
+  .study-auto-label { font-size: 11px; padding: 2px 7px; }
+}
+
+/* Cua the xem truoc o tab "Them tu moi" */
+.flip-tip { display: flex; margin: 10px auto 0; font-size: 13px; }

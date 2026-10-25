@@ -1,0 +1,16 @@
+{
+  "name": "AnkiTool",
+  "short_name": "AnkiTool",
+  "description": "Tạo flashcard tiếng Trung, học theo lịch ôn lại và xuất sang Anki.",
+  "lang": "vi",
+  "start_url": "/#overview",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f6f7f9",
+  "theme_color": "#4338ca",
+  "icons": [
+    { "src": "/static/img/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/static/img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/static/img/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -62,6 +62,8 @@ def _upgrade_words_schema(conn):
 
     if "example_pinyin" not in existing_cols:
         conn.execute("ALTER TABLE words ADD COLUMN example_pinyin TEXT NOT NULL DEFAULT ''")
+    if "mnemonic_credit" not in existing_cols:
+        conn.execute("ALTER TABLE words ADD COLUMN mnemonic_credit TEXT")  # JSON {author, license, source_url}, rong = khong co
     if "category_id" not in existing_cols:
         conn.execute("ALTER TABLE words ADD COLUMN category_id TEXT REFERENCES categories(id)")
     if "ease_factor" not in existing_cols:
@@ -75,6 +77,9 @@ def _upgrade_words_schema(conn):
         # Backfill: cac tu da co tu truoc tinh nang nay phai duoc coi la den han
         # ngay, vi chung chua tung duoc on tap.
         conn.execute("UPDATE words SET due_at = ? WHERE due_at = ''", (today_iso(),))
+    if "buried_until" not in existing_cols:
+        # Ngay (YYYY-MM-DD) dau tien tu duoc hien lai sau khi bi hoan; rong = khong hoan
+        conn.execute("ALTER TABLE words ADD COLUMN buried_until TEXT NOT NULL DEFAULT ''")
     if "reviewed" not in existing_cols:
         conn.execute("ALTER TABLE words ADD COLUMN reviewed INTEGER NOT NULL DEFAULT 0")
         # Backfill giong cach phan loai cu: tu da co repetitions/interval thi da tung duoc on.

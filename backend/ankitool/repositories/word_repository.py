@@ -1,5 +1,7 @@
 """Truy van SQL cho bang words. Khong chua luat nghiep vu."""
 
+import json
+
 from ankitool.constants.srs import DEFAULT_EASE_FACTOR
 from ankitool.database.connection import connect
 from ankitool.utils.clock import today_iso
@@ -12,6 +14,7 @@ WORD_FIELDS = (
     "example",
     "example_pinyin",
     "mnemonic_filename",
+    "mnemonic_credit",
     "gif_filename",
     "audio_filename",
     "category_id",
@@ -20,14 +23,28 @@ WORD_FIELDS = (
     "repetitions",
     "due_at",
     "reviewed",
+    "buried_until",
 )
 
 
 _IN_CHUNK = 500  # so bien toi da moi cau IN (...)
 
 
+def _credit_to_dict(raw):
+    """Cot mnemonic_credit luu JSON; tra dict (hoac None neu rong/hong)."""
+    if not raw:
+        return None
+    try:
+        value = json.loads(raw)
+    except ValueError:
+        return None
+    return value if isinstance(value, dict) else None
+
+
 def _row_to_word(row):
-    return {field: row[field] for field in WORD_FIELDS}
+    word = {field: row[field] for field in WORD_FIELDS}
+    word["mnemonic_credit"] = _credit_to_dict(word["mnemonic_credit"])
+    return word
 
 
 def list_all():
@@ -84,10 +101,10 @@ def insert(word):
         conn.execute(
             """
             INSERT INTO words
-                (id, hanzi, pinyin, meaning, example, example_pinyin, mnemonic_filename, gif_filename,
+                (id, hanzi, pinyin, meaning, example, example_pinyin, mnemonic_filename, mnemonic_credit, gif_filename,
                  audio_filename, position, category_id, ease_factor, interval_days, repetitions, due_at,
                  reviewed)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 word["id"],
@@ -97,6 +114,7 @@ def insert(word):
                 word.get("example", ""),
                 word.get("example_pinyin", ""),
                 word.get("mnemonic_filename"),
+                word.get("mnemonic_credit"),
                 word.get("gif_filename"),
                 word.get("audio_filename"),
                 next_position,
@@ -147,6 +165,18 @@ def set_category(word_id, category_id):
         conn.execute("UPDATE words SET category_id = ? WHERE id = ?", (category_id, word_id))
 
 
+def set_category_many(word_ids, category_id):
+    """Gan danh muc cho nhieu tu trong MOT giao dich (cung thanh cong hoac cung huy). Tra so tu da doi."""
+    updated = 0
+    with connect() as conn:
+        for start in range(0, len(word_ids), _IN_CHUNK):
+            chunk = word_ids[start:start + _IN_CHUNK]
+            marks = ", ".join("?" * len(chunk))
+            cur = conn.execute(f"UPDATE words SET category_id = ? WHERE id IN ({marks})", [category_id, *chunk])
+            updated += cur.rowcount
+    return updated
+
+
 def count_in_category(category_id):
     with connect() as conn:
         return conn.execute(
@@ -154,19 +184,51 @@ def count_in_category(category_id):
         ).fetchone()[0]
 
 
-def list_due(now_iso, category_ids=None, uncategorized_only=False):
-    """Tu co due_at <= now_iso. category_ids: chi lay cac danh muc nay (list khong rong);
-    uncategorized_only: chi tu chua phan loai. Sap xep theo position."""
-    sql = "SELECT * FROM words WHERE due_at <= ?"
-    params = [now_iso]
+def _scope_clause(category_ids, uncategorized_only):
+    """Dieu kien SQL (bat dau bang ' AND ') va tham so cho pham vi danh muc; category_ids == [] -> khong co tu nao."""
     if uncategorized_only:
-        sql += " AND category_id IS NULL"
-    elif category_ids is not None:
-        sql += f" AND category_id IN ({','.join('?' * len(category_ids))})"
-        params += list(category_ids)
+        return " AND category_id IS NULL", []
+    if category_ids is None:
+        return "", []
+    if not category_ids:
+        return " AND 0", []
+    return f" AND category_id IN ({','.join('?' * len(category_ids))})", list(category_ids)
+
+
+def list_due(now_iso, category_ids=None, uncategorized_only=False):
+    """Tu co due_at <= now_iso va khong bi hoan hom nay. category_ids: chi lay cac danh muc nay (list khong rong);
+    uncategorized_only: chi tu chua phan loai. Sap xep theo position."""
+    today = now_iso[:10]
+    scope_sql, scope_params = _scope_clause(category_ids, uncategorized_only)
+    sql = "SELECT * FROM words WHERE due_at <= ? AND (buried_until = '' OR buried_until <= ?)" + scope_sql
     with connect() as conn:
-        rows = conn.execute(sql + " ORDER BY position", params).fetchall()
+        rows = conn.execute(sql + " ORDER BY position", [now_iso, today] + scope_params).fetchall()
         return [_row_to_word(r) for r in rows]
+
+
+def bury(word_id, until):
+    """Hoan tu den ngay `until` (YYYY-MM-DD); khong dung toi lich on tap."""
+    with connect() as conn:
+        conn.execute("UPDATE words SET buried_until = ? WHERE id = ?", (until, word_id))
+
+
+def count_buried(today, category_ids=None, uncategorized_only=False):
+    """So tu dang bi hoan (buried_until > today) trong pham vi."""
+    scope_sql, scope_params = _scope_clause(category_ids, uncategorized_only)
+    with connect() as conn:
+        return conn.execute(
+            "SELECT COUNT(*) FROM words WHERE buried_until > ?" + scope_sql, [today] + scope_params
+        ).fetchone()[0]
+
+
+def clear_buried(today, category_ids=None, uncategorized_only=False):
+    """Bo hoan cac tu dang bi hoan trong pham vi; tra ve so tu da bo hoan."""
+    scope_sql, scope_params = _scope_clause(category_ids, uncategorized_only)
+    with connect() as conn:
+        cur = conn.execute(
+            "UPDATE words SET buried_until = '' WHERE buried_until > ?" + scope_sql, [today] + scope_params
+        )
+        return cur.rowcount
 
 
 def count_due_grouped(now_iso):
@@ -178,7 +240,8 @@ def count_due_grouped(now_iso):
                 SUM(CASE WHEN reviewed = 0 AND repetitions = 0 THEN 1 ELSE 0 END) AS n,
                 SUM(CASE WHEN reviewed = 1 AND repetitions = 0 THEN 1 ELSE 0 END) AS l,
                 SUM(CASE WHEN repetitions > 0 THEN 1 ELSE 0 END) AS d
-            FROM words WHERE due_at <= ? GROUP BY category_id
+            FROM words WHERE due_at <= ? AND (buried_until = '' OR buried_until <= ?)
+            GROUP BY category_id
             """,
-            (now_iso,),
+            (now_iso, now_iso[:10]),
         ).fetchall()

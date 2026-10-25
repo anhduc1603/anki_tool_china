@@ -16,12 +16,30 @@ from ankitool.constants.review_settings import (
     TIMING_UNIT_SECONDS,
     TIMING_UNITS_BY_GRADE,
 )
+from ankitool.constants.study_settings import (
+    AUTO_ADVANCE_ACTIONS,
+    AUTO_ADVANCE_KEYS,
+    AUTO_ADVANCE_MAX_SECONDS,
+    AUTO_ADVANCE_SECONDS_KEYS,
+    DEFAULT_STUDY_AUTO_ADVANCE,
+    DEFAULT_STUDY_AUTOPLAY,
+    DEFAULT_STUDY_TYPE_ANSWER,
+    SETTING_STUDY_AUTO_ADVANCE,
+    SETTING_STUDY_AUTOPLAY,
+    SETTING_STUDY_TYPE_ANSWER,
+    STUDY_AUTOPLAY_KEYS,
+)
 from ankitool.errors import ValidationError
 from ankitool.repositories import setting_repository
 
 
 def default_settings():
-    return {SETTING_REVIEW_TIMING: json.loads(json.dumps(DEFAULT_REVIEW_TIMING))}
+    return {
+        SETTING_REVIEW_TIMING: json.loads(json.dumps(DEFAULT_REVIEW_TIMING)),
+        SETTING_STUDY_AUTOPLAY: dict(DEFAULT_STUDY_AUTOPLAY),
+        SETTING_STUDY_AUTO_ADVANCE: dict(DEFAULT_STUDY_AUTO_ADVANCE),
+        SETTING_STUDY_TYPE_ANSWER: dict(DEFAULT_STUDY_TYPE_ANSWER),
+    }
 
 
 def _timing_item_error(grade, item):
@@ -54,7 +72,40 @@ def _validate_review_timing(section):
     return clean, None
 
 
-_VALIDATORS = {SETTING_REVIEW_TIMING: _validate_review_timing}
+def _validate_study_autoplay(section):
+    """Dung hai cong tat word/example, moi cong tat la bool that (khong nhan 0/1, chuoi, null)."""
+    if not isinstance(section, dict) or set(section) != set(STUDY_AUTOPLAY_KEYS):
+        return None, messages.STUDY_AUTOPLAY_INVALID
+    if not all(isinstance(section[key], bool) for key in STUDY_AUTOPLAY_KEYS):
+        return None, messages.STUDY_AUTOPLAY_INVALID
+    return {key: section[key] for key in STUDY_AUTOPLAY_KEYS}, None
+
+
+def _validate_study_auto_advance(section):
+    """Dung 4 khoa: hai so giay (int that 0..3600), hanh dong hop le, cong tat cho am thanh (bool that)."""
+    if not isinstance(section, dict) or set(section) != set(AUTO_ADVANCE_KEYS):
+        return None, messages.STUDY_AUTO_ADVANCE_INVALID
+    for key in AUTO_ADVANCE_SECONDS_KEYS:
+        value = section[key]
+        if isinstance(value, bool) or not isinstance(value, int) or not 0 <= value <= AUTO_ADVANCE_MAX_SECONDS:
+            return None, messages.STUDY_AUTO_ADVANCE_INVALID
+    if section["answer_action"] not in AUTO_ADVANCE_ACTIONS or not isinstance(section["wait_for_audio"], bool):
+        return None, messages.STUDY_AUTO_ADVANCE_INVALID
+    return {key: section[key] for key in AUTO_ADVANCE_KEYS}, None
+
+
+def _validate_study_type_answer(section):
+    if not isinstance(section, dict) or set(section) != {"enabled"} or not isinstance(section["enabled"], bool):
+        return None, messages.STUDY_TYPE_ANSWER_INVALID
+    return {"enabled": section["enabled"]}, None
+
+
+_VALIDATORS = {
+    SETTING_REVIEW_TIMING: _validate_review_timing,
+    SETTING_STUDY_AUTOPLAY: _validate_study_autoplay,
+    SETTING_STUDY_AUTO_ADVANCE: _validate_study_auto_advance,
+    SETTING_STUDY_TYPE_ANSWER: _validate_study_type_answer,
+}
 
 
 def get_settings():

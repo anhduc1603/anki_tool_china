@@ -1,6 +1,6 @@
 // Bảng xem trước CSV: từng dòng kèm trạng thái (hợp lệ / trùng / lỗi) và lý do, cùng số liệu tổng.
 
-import { escapeHtml } from "../../../shared/dom.js";
+import { escapeHtml } from "../../shared/dom.js";
 
 export const STATUS_LABEL = { ok: "Hợp lệ", duplicate: "Trùng", invalid: "Lỗi" };
 

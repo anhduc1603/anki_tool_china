@@ -21,3 +21,8 @@ export function deleteCategory(categoryId) {
 export function assignWordCategory(wordId, categoryId) {
   return sendJson(`/api/words/${wordId}/category`, "PUT", { category_id: categoryId });
 }
+
+// Gan nhieu tu vao 1 danh muc con trong mot yeu cau (categoryId null = bo gan); data = { updated, missing }
+export function assignWordsCategory(wordIds, categoryId) {
+  return sendJson("/api/words/assign-category", "POST", { word_ids: wordIds, category_id: categoryId });
+}

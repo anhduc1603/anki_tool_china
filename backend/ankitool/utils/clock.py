@@ -7,6 +7,11 @@ def today_iso():
     return date.today().isoformat()
 
 
+def tomorrow_iso():
+    """Ngay mai (gio dia phuong): ngay dau tien 1 tu bi hoan duoc phep quay lai."""
+    return (date.today() + timedelta(days=1)).isoformat()
+
+
 def now_iso():
     return datetime.now().isoformat(timespec="seconds")
 

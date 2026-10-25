@@ -1,5 +1,6 @@
 // Xem truoc the Anki (mat truoc/mat sau) theo noi dung dang nhap trong form.
 
+import { icon } from "../../core/icons.js";
 import { playAudioForText } from "../../shared/audio.js";
 import { createExampleView } from "../../shared/example-view.js";
 import { renderWordPinyin } from "../../shared/pinyin.js";
@@ -29,7 +30,7 @@ export function createPreview(els, imageFields) {
     // Moi lan preview cap nhat, thu gon lai gif ve trang thai an mac dinh
     // (giong dung hanh vi that trong Anki: phai bam nut moi hien).
     els.pGif.classList.remove("open");
-    els.toggleGifBtn.textContent = "✍️ Xem cách viết nét";
+    els.toggleGifBtn.innerHTML = `${icon("edit")}Xem cách viết nét`;
     if (gifUrl) {
       els.pGif.innerHTML = `<img src="${gifUrl}" alt="net viet">`;
       els.toggleGifBtn.classList.remove("hidden");
@@ -52,15 +53,16 @@ export function createPreview(els, imageFields) {
   els.toggleGifBtn.addEventListener("click", (e) => {
     e.stopPropagation();
     const open = els.pGif.classList.toggle("open");
-    els.toggleGifBtn.textContent = open ? "🙈 Ẩn cách viết nét" : "✍️ Xem cách viết nét";
+    els.toggleGifBtn.innerHTML = open ? `${icon("eye-off")}Ẩn cách viết nét` : `${icon("edit")}Xem cách viết nét`;
   });
 
-  els.flipCard.addEventListener("click", () => {
+  // Lat the: bam vao the hoac nut ben duoi (nut cho ban phim / cong nghe ho tro)
+  function flip() {
     const flipped = els.flipCard.classList.toggle("flipped");
-    els.flipTip.textContent = flipped
-      ? "Bấm lại để xem mặt trước"
-      : "Bấm vào thẻ để xem đáp án";
-  });
+    els.flipTip.textContent = flipped ? "Bấm lại để xem mặt trước" : "Bấm vào thẻ để xem đáp án";
+  }
+  els.flipCard.addEventListener("click", flip);
+  els.flipTip.addEventListener("click", flip);
 
   return { update };
 }

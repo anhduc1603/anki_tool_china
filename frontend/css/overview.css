@@ -1,0 +1,90 @@
+/* ---------- Trang Tong quan ---------- */
+.home { display: flex; flex-direction: column; gap: var(--space-6); }
+#home-content { display: flex; flex-direction: column; gap: var(--space-6); }
+
+.home-today { display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); flex-wrap: wrap; }
+.home-today h2 { margin: 0 0 var(--space-1); font-size: var(--text-xl); }
+.home-today-msg { margin: 0 0 var(--space-4); font-size: var(--text-sm); }
+.home-counters { display: flex; flex-wrap: wrap; gap: var(--space-8); }
+.counter { display: flex; flex-direction: column; min-width: 64px; }
+.counter-num { font-size: var(--text-3xl); font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.counter-num.state-new { color: var(--state-new); }
+.counter-num.state-learn { color: var(--state-learn); }
+.counter-num.state-review { color: var(--state-review); }
+.counter-label { font-size: var(--text-sm); color: var(--text-muted); font-weight: 600; }
+.counter-total { padding-left: var(--space-8); border-left: 1px solid var(--border); }
+.counter-zero { opacity: 0.45; }
+
+.home-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: var(--space-6); align-items: start; }
+.home-side { display: flex; flex-direction: column; gap: var(--space-6); }
+.home-quick { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+/* Bang bo the (deck list): ten | Moi | Dang hoc | On lai */
+.deck-table { font-size: var(--text-md); }
+.deck-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 64px 72px 64px;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-sm);
+}
+.deck-head { min-height: 32px; font-size: var(--text-xs); font-weight: 700; color: var(--text-muted); border-bottom: 1px solid var(--border); border-radius: 0; margin-bottom: var(--space-1); }
+.deck-head span:not(:first-child) { text-align: right; }
+.deck-row:not(.deck-head):hover { background: var(--surface-2); }
+.deck-name { display: flex; align-items: center; gap: var(--space-1); min-width: 0; }
+.deck-indent { padding-left: 28px; }
+.deck-toggle, .deck-toggle-spacer { width: 28px; height: 28px; flex: none; display: inline-flex; align-items: center; justify-content: center; }
+.deck-toggle { border: none; background: transparent; color: var(--text-muted); border-radius: var(--radius-sm); cursor: pointer; padding: 0; }
+.deck-toggle:hover { background: var(--surface-2); color: var(--text); }
+.deck-toggle .icon { width: 16px; height: 16px; transition: transform 0.15s ease; }
+.deck-toggle[aria-expanded="true"] .icon { transform: rotate(90deg); }
+.deck-link {
+  border: none; background: transparent; padding: 6px 2px; font: inherit; font-weight: 600; color: var(--text);
+  text-align: left; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
+}
+.deck-link:hover { color: var(--primary); text-decoration: underline; }
+.deck-uncategorized .deck-link { color: var(--text-muted); }
+.deck-count { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.count-new { color: var(--state-new); }
+.count-learn { color: var(--state-learn); }
+.count-due { color: var(--state-review); }
+.deck-count.zero { color: var(--text-muted); font-weight: 400; opacity: 0.6; }
+.deck-empty { padding: var(--space-4) var(--space-2); color: var(--text-muted); font-size: var(--text-sm); }
+
+/* Kho tu: tong so, thanh ti le 3 doan co nhan chu, chu thich */
+.collection-total { margin: 0 0 var(--space-3); color: var(--text-muted); }
+.collection-total-num { font-size: var(--text-2xl); font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+.collection-bar { display: flex; height: 12px; border-radius: 999px; overflow: hidden; background: var(--surface-2); margin-bottom: var(--space-3); }
+.collection-bar span { display: block; height: 100%; min-width: 0; }
+.collection-legend { list-style: none; margin: 0 0 var(--space-3); padding: 0; display: flex; flex-direction: column; gap: var(--space-2); font-size: var(--text-sm); }
+.collection-legend li { display: flex; align-items: center; gap: var(--space-2); }
+.collection-legend b { margin-left: auto; font-variant-numeric: tabular-nums; }
+.legend-swatch { width: 12px; height: 12px; border-radius: 3px; flex: none; }
+.legend-new, .bar-new { background: var(--bar-new); }
+.legend-learning, .bar-learning { background: var(--state-new); }
+.legend-mature, .bar-mature { background: var(--state-review); }
+
+/* 3 buoc cho nguoi dung moi */
+.home-onboarding h2 { margin: 0 0 var(--space-1); font-size: var(--text-xl); }
+.steps { list-style: none; margin: var(--space-5) 0 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-5); }
+.steps li { display: flex; gap: var(--space-4); }
+.step-num {
+  flex: none; width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+  background: var(--primary-soft); color: var(--primary); font-weight: 700;
+}
+.step-body h3 { margin: 0 0 var(--space-1); font-size: var(--text-md); }
+.step-body p { margin: 0 0 var(--space-3); color: var(--text-muted); font-size: var(--text-sm); }
+.step-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+@media (max-width: 900px) {
+  .home-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .home-today { align-items: stretch; }
+  .home-today .btn-lg { width: 100%; }
+  .home-counters { gap: var(--space-5); }
+  .counter-total { padding-left: 0; border-left: 0; }
+  .counter-num { font-size: var(--text-2xl); }
+  .deck-row { grid-template-columns: minmax(0, 1fr) 36px 64px 52px; font-size: var(--text-sm); }
+}

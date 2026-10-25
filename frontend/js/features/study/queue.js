@@ -2,6 +2,13 @@
 
 import { SESSION_WAIT_SECONDS } from "../../constants.js";
 
+// Loai cua 1 tu cho bo dem (cung quy tac voi backend count_due_grouped):
+// "new" = chua on lan nao; "learn" = da on nhung con o giai doan hoc; "review" = da tot nghiep.
+export function wordKind(word) {
+  if (word.repetitions > 0) return "review";
+  return word.reviewed ? "learn" : "new";
+}
+
 export function createQueue() {
   let due = [];
   let waiting = []; // {word, dueAtMs, again}, sap xep theo gio den han
@@ -24,6 +31,19 @@ export function createQueue() {
     },
 
     current: () => due[0],
+    // Loai cua the dang hien ("new"/"learn"/"review"), undefined neu khong co the nao den han
+    currentKind: () => (due.length ? wordKind(due[0]) : undefined),
+    // So tu con lai trong phien theo loai, gom ca the dang cho quay lai
+    counts() {
+      const counts = { new: 0, learn: 0, review: 0 };
+      for (const word of due) counts[wordKind(word)] += 1;
+      for (const item of waiting) counts[wordKind(item.word)] += 1;
+      return counts;
+    },
+    // Bo the dang hien khoi phien ma khong cham diem (khi hoan the)
+    removeCurrent() {
+      due.shift();
+    },
     dueCount: () => due.length,
     waitingCount: () => waiting.length,
     // So ms con lai den the cho gan nhat (null neu khong co the nao dang cho)

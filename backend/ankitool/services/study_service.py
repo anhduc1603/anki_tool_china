@@ -8,7 +8,7 @@ from ankitool.constants.srs import GRADES
 from ankitool.errors import NotFoundError, ValidationError
 from ankitool.repositories import category_repository, word_repository
 from ankitool.services import category_service, scheduler, settings_service
-from ankitool.utils.clock import due_after, now_iso
+from ankitool.utils.clock import due_after, now_iso, today_iso, tomorrow_iso
 
 
 def _list_due(scope):
@@ -19,6 +19,27 @@ def _list_due(scope):
     if category_ids is not None and not category_ids:
         return []
     return word_repository.list_due(now, category_ids=category_ids, uncategorized_only=uncategorized_only)
+
+
+def bury_word(word_id):
+    """Hoan tu den het hom nay (ngay mai tu quay lai); khong doi lich on tap. Khong co tu -> NotFoundError."""
+    if not word_repository.exists(word_id):
+        raise NotFoundError(messages.WORD_NOT_FOUND)
+    until = tomorrow_iso()
+    word_repository.bury(word_id, until)
+    return {"buried_until": until}
+
+
+def buried_count(scope=None):
+    """So tu dang bi hoan hom nay trong pham vi (cung quy uoc pham vi voi danh sach den han)."""
+    category_ids, uncategorized_only = category_service.resolve_scope(scope)
+    return word_repository.count_buried(today_iso(), category_ids, uncategorized_only)
+
+
+def unbury(scope=None):
+    """Bo hoan cac tu dang bi hoan trong pham vi; tra ve so tu da bo hoan."""
+    category_ids, uncategorized_only = category_service.resolve_scope(scope)
+    return word_repository.clear_buried(today_iso(), category_ids, uncategorized_only)
 
 
 def get_due_words(scope=None):

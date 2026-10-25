@@ -27,6 +27,8 @@ PARENT_CATEGORY_NOT_FOUND = "Danh muc cha khong ton tai."
 CATEGORY_CHILD_OF_CHILD = "Khong the tao danh muc con duoi 1 danh muc con khac (chi toi da 2 cap)."
 CATEGORY_HAS_CHILDREN = "Danh muc nay con danh muc con ben trong, hay xoa chung truoc."
 CATEGORY_HAS_WORDS = "Danh muc nay con tu dang gan vao, hay bo gan truoc."
+BULK_ASSIGN_INVALID_LIST = "Danh sách từ cần chuyển không hợp lệ."
+BULK_ASSIGN_TOO_MANY = "Mỗi lần chỉ chuyển tối đa {limit} từ."
 ASSIGN_TO_PARENT_CATEGORY = "Chi duoc gan tu vao danh muc con, khong duoc gan vao danh muc cha."
 
 # --- hoc / on tap ---
@@ -48,6 +50,16 @@ TIMING_VALUE_INVALID_AGAIN = "Thoi gian '{grade}' phai la so nguyen tu 0 tro len
 TIMING_UNIT_INVALID_AGAIN = "Don vi cua '{grade}' phai la giay, phut, gio hoac ngay."
 TIMING_TOO_LONG = "Thoi gian '{grade}' khong duoc vuot qua 365 ngay."
 
+STUDY_AUTOPLAY_INVALID = (
+    "Cài đặt tự động đọc không hợp lệ: cần đúng hai công tắc (từ và câu ví dụ), mỗi công tắc là bật hoặc tắt."
+)
+
+STUDY_AUTO_ADVANCE_INVALID = (
+    "Cài đặt tự chuyển thẻ không hợp lệ: số giây phải là số nguyên từ 0 đến 3600, hành động phải là "
+    "nhắc, Again, Hard, Good hoặc hoãn thẻ, và \"chờ âm thanh\" là bật hoặc tắt."
+)
+STUDY_TYPE_ANSWER_INVALID = "Cài đặt gõ đáp án không hợp lệ: cần một công tắc bật hoặc tắt."
+
 # --- nhap tu hang loat tu CSV (thong bao moi: tieng Viet co dau vi hien thi truc tiep cho nguoi dung) ---
 IMPORT_EMPTY = "Nội dung CSV đang trống."
 IMPORT_NOT_TEXT = "Thiếu nội dung CSV."
@@ -67,3 +79,13 @@ IMPORT_ROW_TOO_MANY_VALUES = (
 IMPORT_ROW_PINYIN_IGNORED = "{reason} Từ vẫn được nhập nhưng không kèm pinyin câu ví dụ."
 IMPORT_ROW_FAILED = "Không lưu được dòng này: {error}"
 IMPORT_ROW_FAILED_UNKNOWN = "Không lưu được dòng này do lỗi không xác định."
+
+# --- goi y anh minh hoa ---
+IMAGE_KEYWORD_REQUIRED = "Hãy nhập từ khóa để tìm ảnh."
+IMAGE_KEYWORD_TOO_LONG = "Từ khóa quá dài (tối đa {limit} ký tự)."
+IMAGE_SOURCE_UNKNOWN = "Nguồn ảnh không hợp lệ."
+IMAGE_CANDIDATE_EXPIRED = "Kết quả tìm ảnh đã cũ, hãy tìm lại."
+IMAGE_FETCH_FAILED = "Không tải được ảnh này, hãy thử ảnh khác hoặc tìm lại."
+IMAGE_TOO_LARGE = "Ảnh lớn hơn {limit_mb} MB, hãy thử ảnh khác."
+IMAGE_TYPE_NOT_ALLOWED = "Loại ảnh này không được hỗ trợ, hãy thử ảnh khác."
+IMAGE_CREDIT_INVALID = "Thông tin nguồn ảnh không hợp lệ."

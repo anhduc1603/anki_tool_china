@@ -3,6 +3,7 @@ Luat nghiep vu tu vung: kiem tra truong bat buoc, anh upload, sinh audio, them/s
 Nhan `form`/`files` dang dict-like (vd request.form/request.files) nhung khong import flask.
 """
 
+import json
 import os
 import uuid
 
@@ -52,6 +53,34 @@ def _read_text_fields(form):
     return hanzi, pinyin, meaning, example
 
 
+def _read_credit(form):
+    """Nguon anh goi y do giao dien gui kem (JSON {author, license, source_url}); tra chuoi JSON da lam sach
+    hoac None neu khong co. Sai dinh dang -> ValidationError."""
+    raw = form.get("mnemonic_credit")
+    if not raw:
+        return None
+    try:
+        data = json.loads(raw)
+    except ValueError:
+        raise ValidationError(messages.IMAGE_CREDIT_INVALID)
+    if not isinstance(data, dict):
+        raise ValidationError(messages.IMAGE_CREDIT_INVALID)
+    author, license_name, source_url = (data.get(k) for k in ("author", "license", "source_url"))
+    for value, limit in ((author, 200), (license_name, 100), (source_url, 500)):
+        if value is not None and (not isinstance(value, str) or len(value) > limit):
+            raise ValidationError(messages.IMAGE_CREDIT_INVALID)
+    if source_url and not source_url.startswith(("https://", "http://")):
+        raise ValidationError(messages.IMAGE_CREDIT_INVALID)
+    return json.dumps(
+        {"author": author or "", "license": license_name or "", "source_url": source_url or ""}, ensure_ascii=False
+    )
+
+
+def _has_new_file(files, name):
+    file = files.get(name)
+    return bool(file and file.filename)
+
+
 def _new_word_dict(hanzi, pinyin, meaning, example, category_id=None, example_pinyin=""):
     return {
         "id": uuid.uuid4().hex,
@@ -61,6 +90,7 @@ def _new_word_dict(hanzi, pinyin, meaning, example, category_id=None, example_pi
         "example": example,
         "example_pinyin": example_pinyin,
         "mnemonic_filename": None,
+        "mnemonic_credit": None,
         "gif_filename": None,
         "audio_filename": None,
         "category_id": category_id,
@@ -83,8 +113,10 @@ def add_word(form, files):
     hanzi, pinyin, meaning, example = _read_text_fields(form)
     category_id = category_service.clean_category_id(form.get("category_id"))  # sai -> loi, chua ghi gi
     example_pinyin = _clean_example_pinyin(example, form.get("example_pinyin"))
+    credit = _read_credit(form)  # sai -> loi, chua ghi gi
     word = _new_word_dict(hanzi, pinyin, meaning, example, category_id, example_pinyin)
     saved = media_service.apply_image_uploads(word, files)
+    word["mnemonic_credit"] = credit if word.get("mnemonic_filename") else None
     try:
         return _save_new_word(word)
     except Exception:
@@ -110,8 +142,14 @@ def update_word(word_id, form, files):
     if "category_id" in form:  # chi doi danh muc khi nguoi goi gui truong nay
         fields["category_id"] = category_service.clean_category_id(form.get("category_id"))
 
+    credit = _read_credit(form)  # sai -> loi, chua ghi gi
     old_files = _media_files_of(word)  # truoc khi apply_image_uploads doi ten file trong dict
     remove_flags = {name: form.get(f"remove_{name}") == "1" for name in IMAGE_FIELDS}
+    # Nguon anh di cung anh: anh moi -> credit gui kem (hoac xoa neu khong co); xoa anh -> xoa credit; con lai giu nguyen
+    if _has_new_file(files, "mnemonic"):
+        fields["mnemonic_credit"] = credit
+    elif remove_flags.get("mnemonic"):
+        fields["mnemonic_credit"] = None
     saved = media_service.apply_image_uploads(word, files, remove_flags)
     try:
         audio_filename = os.path.basename(media_service.generate_audio_file(hanzi))

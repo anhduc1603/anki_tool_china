@@ -1,0 +1,17 @@
+/* Man hinh cam ung / dien thoai: moi dieu khien bam duoc cao toi thieu 44px (nap CUOI CUNG de ghi de cac file trang) */
+@media (pointer: coarse), (max-width: 600px) {
+  .topbar-toggle { width: var(--touch-target); height: var(--touch-target); }
+  .deck-toggle, .cat-toggle, .cat-gear { min-width: 36px; min-height: var(--touch-target); }
+  .deck-toggle-spacer, .cat-toggle-spacer { width: 36px; }
+  .deck-link, .cat-item, .cat-select, .study-side-btn,
+  .timing-row input, .timing-row select, .aa-row input, .aa-row select,
+  .study-controls select, details.help summary, .toast-action, .toast-close,
+  .gear-menu button, .paste-zone, .image-thumb { min-height: var(--touch-target); }
+  .cell-select input { width: 22px; height: 22px; }
+  .cell-select { min-width: var(--touch-target); }
+  .bulk-bar .btn, .bulk-bar .cat-select { min-height: var(--touch-target); }
+  .deck-link { display: inline-flex; align-items: center; }
+  .deck-indent { padding-left: 8px; }
+  .cat-row.is-child { padding-left: 8px; }
+  details.help summary { display: inline-flex; align-items: center; }
+}

@@ -38,6 +38,26 @@ function showPasteStatus(f, text, type) {
   }, 2500);
 }
 
+function escapeAttr(text) {
+  return String(text == null ? "" : text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+// Dong "Anh: tac gia · giay phep · nguon" duoi anh goi nho (chi anh lay tu goi y moi co)
+function renderCredit(f, credit) {
+  if (!f.creditEl) return;
+  const safeLink = credit && /^https?:\/\//i.test(credit.source_url || "") ? credit.source_url : "";
+  if (!credit) {
+    f.creditEl.classList.add("hidden");
+    f.creditEl.textContent = "";
+    return;
+  }
+  const who = escapeAttr(credit.author || "Không rõ tác giả");
+  const lic = escapeAttr(credit.license || "không rõ giấy phép");
+  const link = safeLink ? ` · <a href="${escapeAttr(safeLink)}" target="_blank" rel="noopener noreferrer">nguồn</a>` : "";
+  f.creditEl.innerHTML = `Ảnh: ${who} · ${lic}${link}`;
+  f.creditEl.classList.remove("hidden");
+}
+
 // onChange(): goi khi anh thay doi (de cap nhat preview)
 export function createImageFields({ onChange }) {
   const $ = (id) => document.getElementById(id);
@@ -48,6 +68,10 @@ export function createImageFields({ onChange }) {
       removeBtn: $("remove-mnemonic-btn"),
       pasteZone: $("mnemonic-paste-zone"),
       statusEl: $("mnemonic-paste-status"),
+      creditEl: $("mnemonic-credit"),
+      credit: null, // nguon anh vua chon tu goi y (gui kem khi luu)
+      existingCredit: null, // nguon anh da luu cua tu dang sua
+      fromSuggestion: false,
       removeRequested: false,
       existingUrl: null,
       statusTimer: null,
@@ -58,24 +82,39 @@ export function createImageFields({ onChange }) {
       removeBtn: $("remove-gif-btn"),
       pasteZone: $("gif-paste-zone"),
       statusEl: $("gif-paste-status"),
+      credit: null,
+      existingCredit: null,
+      fromSuggestion: false,
       removeRequested: false,
       existingUrl: null,
       statusTimer: null,
     },
   };
 
+  // Nguon can hien: file vua chon > anh da luu (neu chua yeu cau xoa) > khong co
+  function updateCredit(f) {
+    if (f.input.files && f.input.files[0]) renderCredit(f, f.credit);
+    else if (!f.removeRequested && f.existingUrl) renderCredit(f, f.existingCredit);
+    else renderCredit(f, null);
+  }
+
   function reset(name) {
     const f = fields[name];
     f.removeRequested = false;
     f.existingUrl = null;
+    f.credit = null;
+    f.existingCredit = null;
     f.input.value = "";
     f.currentDiv.classList.add("hidden");
+    updateCredit(f);
   }
 
   function loadFromWord(name, w) {
     const f = fields[name];
     f.removeRequested = false;
     f.input.value = "";
+    f.credit = null;
+    f.existingCredit = w[`${name}_credit`] || null;
     const filename = w[`${name}_filename`];
     if (filename) {
       f.existingUrl = `/media/${filename}`;
@@ -84,6 +123,7 @@ export function createImageFields({ onChange }) {
       f.existingUrl = null;
       f.currentDiv.classList.add("hidden");
     }
+    updateCredit(f);
   }
 
   // URL de preview: file vua chon > anh dang co (neu chua yeu cau xoa) > khong co
@@ -98,15 +138,31 @@ export function createImageFields({ onChange }) {
     return null;
   }
 
+  // Gan 1 File vao o anh nhu khi chon/dan tay; credit (neu co) la nguon cua anh goi y
+  function attachFile(f, file, credit = null) {
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    f.input.files = dt.files;
+    f.removeRequested = false;
+    f.credit = credit;
+    f.fromSuggestion = !!credit;
+    f.input.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
   Object.values(fields).forEach((f) => {
     f.input.addEventListener("change", () => {
+      if (!f.fromSuggestion) f.credit = null; // anh chon/dan tay khong co nguon
+      f.fromSuggestion = false;
       f.removeRequested = false;
+      updateCredit(f);
       onChange();
     });
     f.removeBtn.addEventListener("click", () => {
       f.removeRequested = true;
       f.currentDiv.classList.add("hidden");
       f.input.value = "";
+      f.credit = null;
+      updateCredit(f);
       onChange();
     });
     f.pasteZone.addEventListener("paste", (e) => {
@@ -117,11 +173,7 @@ export function createImageFields({ onChange }) {
         showPasteStatus(f, "Không có ảnh trong clipboard.", "error");
         return;
       }
-      const dt = new DataTransfer();
-      dt.items.add(file);
-      f.input.files = dt.files;
-      f.removeRequested = false;
-      f.input.dispatchEvent(new Event("change", { bubbles: true }));
+      attachFile(f, file);
       showPasteStatus(f, "Đã dán ảnh.", "success");
     });
   });
@@ -129,6 +181,15 @@ export function createImageFields({ onChange }) {
   return {
     fields,
     currentUrl,
+    // Dat anh cho o `name` tu 1 File (anh goi y); credit = { author, license, source_url }
+    setFile(name, file, credit) {
+      attachFile(fields[name], file, credit);
+    },
+    // O anh dang co anh (file moi, hoac anh da luu chua bi yeu cau xoa)?
+    hasImage(name) {
+      const f = fields[name];
+      return !!((f.input.files && f.input.files[0]) || (!f.removeRequested && f.existingUrl));
+    },
     resetAll() {
       Object.keys(fields).forEach(reset);
     },
@@ -140,6 +201,7 @@ export function createImageFields({ onChange }) {
       Object.entries(fields).forEach(([name, f]) => {
         if (f.input.files && f.input.files[0]) {
           formData.append(name, f.input.files[0]);
+          if (f.credit) formData.append(`${name}_credit`, JSON.stringify(f.credit));
         } else if (f.removeRequested) {
           formData.append(`remove_${name}`, "1");
         }

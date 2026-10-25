@@ -2,20 +2,61 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AnkiTool - Tạo Flashcard Tiếng Trung</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>AnkiTool</title>
+<meta name="theme-color" content="#4338ca">
+<!-- Cai duoc len man hinh chinh. crossorigin="use-credentials": khi trang dat sau dang nhap (basicauth) thi manifest van tai duoc -->
+<link rel="manifest" href="/static/manifest.webmanifest" crossorigin="use-credentials">
+<link rel="icon" type="image/png" href="/static/img/icon-192.png">
+<link rel="apple-touch-icon" href="/static/img/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/tokens.css">
 <link rel="stylesheet" href="/static/css/base.css">
+<link rel="stylesheet" href="/static/css/components.css">
 <link rel="stylesheet" href="/static/css/forms.css">
 <link rel="stylesheet" href="/static/css/add-word.css">
 <link rel="stylesheet" href="/static/css/import.css">
 <link rel="stylesheet" href="/static/css/sidebar.css">
-<link rel="stylesheet" href="/static/css/categories.css">
+<link rel="stylesheet" href="/static/css/overview.css">
+<link rel="stylesheet" href="/static/css/library.css">
 <link rel="stylesheet" href="/static/css/study.css">
 <link rel="stylesheet" href="/static/css/settings.css">
+<link rel="stylesheet" href="/static/css/touch.css">
 </head>
 <body>
+
+<svg id="icon-sprite" width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/><path d="M10 20v-6h4v6"/></symbol>
+  <symbol id="i-study" viewBox="0 0 24 24"><rect x="3" y="7" width="14" height="14" rx="2"/><path d="M7 7V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2h-2"/></symbol>
+  <symbol id="i-library" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="3.5" cy="6" r="1"/><circle cx="3.5" cy="12" r="1"/><circle cx="3.5" cy="18" r="1"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+  <symbol id="i-speaker" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M4 20h16"/></symbol>
+  <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/><circle cx="19" cy="12" r="1.2" fill="currentColor"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+  <symbol id="i-warning" viewBox="0 0 24 24"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 5v14l12-7z"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></symbol>
+  <symbol id="i-clipboard" viewBox="0 0 24 24"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M8 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 6.1A9.8 9.8 0 0 1 12 6c6.5 0 10 6 10 6a17 17 0 0 1-3.2 3.9M6.7 7.7C3.9 9.5 2 12 2 12s3.5 6 10 6c1.4 0 2.7-.3 3.8-.7"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="m21 16-5-5-8 8"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+</svg>
+<a class="skip-link" id="skip-link" href="#main">Bỏ qua tới nội dung</a>
 
 <div class="app-shell" id="app-shell">
 <script>
@@ -29,26 +70,31 @@
 </script>
 
 <!-- MENU CHỨC NĂNG (bên trái, thu gọn được; trên màn hình hẹp là ngăn kéo) -->
-<aside class="sidebar" id="sidebar" aria-label="Menu chức năng">
+<aside class="sidebar" id="sidebar" aria-label="Menu chính">
   <div class="sidebar-brand">
-    <span class="brand-mark">汉</span>
-    <div class="brand-text">
-      <h1>AnkiTool</h1>
-      <p>Trình tạo Flashcard tiếng Trung cho Anki</p>
-    </div>
+    <span class="brand-mark" aria-hidden="true">汉</span>
+    <span class="brand-name">AnkiTool</span>
   </div>
-  <nav class="sidebar-nav">
-    <button type="button" class="tab-btn active" data-tab="tab-add" title="Thêm từ mới" aria-label="Thêm từ mới">
-      <span class="nav-icon" aria-hidden="true">📝</span><span class="nav-label">Thêm từ mới</span>
-    </button>
-    <button type="button" class="tab-btn" data-tab="tab-categories" title="Quản lý danh mục" aria-label="Quản lý danh mục">
-      <span class="nav-icon" aria-hidden="true">🗂️</span><span class="nav-label">Quản lý danh mục</span>
+
+  <button type="button" class="btn btn-primary nav-add tab-btn" data-tab="tab-add" title="Thêm từ" aria-label="Thêm từ">
+    <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-plus"></use></svg><span class="nav-label">Thêm từ</span>
+  </button>
+
+  <nav class="sidebar-nav" aria-label="Chức năng">
+    <button type="button" class="tab-btn" data-tab="tab-home" title="Tổng quan" aria-label="Tổng quan">
+      <span class="nav-icon"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-home"></use></svg></span><span class="nav-label">Tổng quan</span>
     </button>
     <button type="button" class="tab-btn" data-tab="tab-study" title="Học" aria-label="Học">
-      <span class="nav-icon" aria-hidden="true">🎓</span><span class="nav-label">Học</span>
+      <span class="nav-icon"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-study"></use></svg></span><span class="nav-label">Học</span>
     </button>
+    <button type="button" class="tab-btn" data-tab="tab-library" title="Từ vựng" aria-label="Từ vựng">
+      <span class="nav-icon"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-library"></use></svg></span><span class="nav-label">Từ vựng</span>
+    </button>
+  </nav>
+
+  <nav class="sidebar-nav sidebar-nav-bottom" aria-label="Cài đặt">
     <button type="button" class="tab-btn" data-tab="tab-settings" title="Cài đặt" aria-label="Cài đặt">
-      <span class="nav-icon" aria-hidden="true">⚙️</span><span class="nav-label">Cài đặt</span>
+      <span class="nav-icon"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-sliders"></use></svg></span><span class="nav-label">Cài đặt</span>
     </button>
   </nav>
 </aside>
@@ -56,270 +102,450 @@
 
 <div class="app-main">
 
-<!-- THANH TRÊN CÙNG: nút menu, tên chức năng đang mở, số từ -->
+<!-- THANH TRÊN CÙNG: nút menu và tên trang đang mở -->
 <header class="topbar">
-  <button type="button" class="topbar-toggle" id="sidebar-toggle" aria-controls="sidebar" aria-expanded="true" title="Thu gọn/mở menu" aria-label="Thu gọn/mở menu">☰</button>
-  <h2 class="topbar-title" id="topbar-title">Thêm từ mới</h2>
-  <div class="word-count" id="word-count">0 từ</div>
+  <button type="button" class="topbar-toggle" id="sidebar-toggle" aria-controls="sidebar" aria-expanded="true" title="Thu gọn/mở menu" aria-label="Thu gọn/mở menu"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-menu"></use></svg></button>
+  <h1 class="topbar-title" id="topbar-title">Tổng quan</h1>
 </header>
 
-<main class="layout tab-panel" id="tab-add">
+<main id="main" tabindex="-1">
 
-  <!-- CỘT TRÁI: form + danh sách -->
-  <section class="panel form-panel">
-    <h2 id="form-title">Thêm từ mới</h2>
-    <form id="word-form">
-      <input type="hidden" id="word-id" value="">
+<!-- TRANG: Tổng quan -->
+<section class="tab-panel hidden" id="tab-home" aria-label="Tổng quan">
+  <div class="page home">
 
-      <div class="field">
-        <label for="hanzi">Chữ Hán <span class="req">*</span></label>
-        <input type="text" id="hanzi" name="hanzi" placeholder="你好" autocomplete="off" required>
-      </div>
-
-      <div class="field-row">
-        <div class="field">
-          <label for="pinyin">Pinyin <span class="req">*</span></label>
-          <input type="text" id="pinyin" name="pinyin" placeholder="nǐ hǎo" autocomplete="off" required>
-        </div>
-        <button type="button" id="listen-btn" class="btn btn-icon" title="Nghe thử phát âm">
-          🔊 Nghe thử
-        </button>
-      </div>
-
-      <div class="field">
-        <label for="meaning">Nghĩa tiếng Việt <span class="req">*</span></label>
-        <input type="text" id="meaning" name="meaning" placeholder="xin chào" autocomplete="off" required>
-      </div>
-
-      <div class="field">
-        <label for="example">Câu ví dụ</label>
-        <textarea id="example" name="example" rows="2" placeholder="你好，很高兴认识你。(Xin chào, rất vui được gặp bạn.)"></textarea>
-      </div>
-
-      <div class="field">
-        <label for="example-pinyin">Pinyin câu ví dụ <span class="hint">(mỗi chữ Hán một âm tiết, cách nhau dấu cách, không dấu câu; bỏ trống nếu không cần)</span></label>
-        <input type="text" id="example-pinyin" name="example_pinyin" placeholder="nǐ hǎo hěn gāo xìng rèn shi nǐ" autocomplete="off">
-      </div>
-
-      <div class="field">
-        <label for="word-category">Danh mục <span class="hint">(tùy chọn, chỉ danh mục con)</span></label>
-        <select id="word-category" name="category_id">
-          <option value="">Chưa phân loại</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label for="mnemonic">Ảnh gợi nhớ <span class="hint">(hiện luôn ở mặt đáp án)</span></label>
-        <input type="file" id="mnemonic" name="mnemonic" accept=".gif,.png,.jpg,.jpeg,.webp,.svg">
-        <div class="paste-zone" id="mnemonic-paste-zone" tabindex="0">📋 Hoặc bấm vào đây rồi dán ảnh (Ctrl+V)</div>
-        <p class="paste-status" id="mnemonic-paste-status"></p>
-        <div id="mnemonic-current" class="gif-current hidden">
-          <span>Ảnh hiện tại đã lưu.</span>
-          <button type="button" id="remove-mnemonic-btn" class="btn btn-tiny btn-danger">Xóa ảnh</button>
-        </div>
-      </div>
-
-      <div class="field">
-        <label for="gif">Ảnh GIF nét viết <span class="hint">(ẩn sẵn, bấm nút mới hiện)</span></label>
-        <input type="file" id="gif" name="gif" accept=".gif,.png,.jpg,.jpeg,.webp,.svg">
-        <div class="paste-zone" id="gif-paste-zone" tabindex="0">📋 Hoặc bấm vào đây rồi dán ảnh (Ctrl+V)</div>
-        <p class="paste-status" id="gif-paste-status"></p>
-        <div id="gif-current" class="gif-current hidden">
-          <span>Ảnh hiện tại đã lưu.</span>
-          <button type="button" id="remove-gif-btn" class="btn btn-tiny btn-danger">Xóa ảnh</button>
-        </div>
-      </div>
-
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary" id="save-btn">Lưu từ</button>
-        <button type="button" class="btn btn-ghost hidden" id="cancel-edit-btn">Hủy sửa</button>
-      </div>
-      <p class="form-msg" id="form-msg"></p>
-    </form>
-
-    <hr class="divider">
-
-    <div class="list-heading">
-      <h2>Danh sách từ đã thêm</h2>
-      <button type="button" class="btn btn-icon" id="import-open-btn" title="Nhập nhiều từ từ file CSV (do AI tạo)">📥 Nhập từ CSV</button>
+    <div class="card state-card error-state hidden" id="home-error" role="alert">
+      <h2>Không tải được dữ liệu</h2>
+      <p>Kiểm tra kết nối tới máy chủ rồi thử lại.</p>
+      <button type="button" class="btn btn-secondary" id="home-retry-btn"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-refresh"></use></svg>Thử lại</button>
     </div>
-    <div class="list-filter">
-      <div class="field">
-        <label for="list-scope">Xem theo danh mục</label>
-        <select id="list-scope">
-          <option value="">Tất cả danh mục</option>
-          <option value="uncategorized">Chưa phân loại</option>
-        </select>
-      </div>
-      <span class="list-count" id="list-count">0 từ</span>
-    </div>
-    <div id="word-list" class="word-list"></div>
 
-    <div class="export-box">
-      <div class="field">
-        <label for="deck-name">Tên bộ thẻ (deck)</label>
-        <input type="text" id="deck-name" value="MyChineseDeck" autocomplete="off">
-      </div>
-      <button type="button" id="export-btn" class="btn btn-export">⬇ Xuất file .apkg <span id="export-count"></span></button>
-      <p class="export-hint">File chỉ chứa các từ đang hiện trong danh sách (theo danh mục đã chọn). Sau khi tải xong: mở Anki → File → Import... → chọn file vừa tải.</p>
-    </div>
-  </section>
-
-  <!-- CỘT PHẢI: preview -->
-  <section class="panel preview-panel">
-    <h2>Xem trước thẻ</h2>
-    <p class="preview-hint">Bấm vào thẻ để lật mặt trước / mặt sau — giống hệt khi học trong Anki.</p>
-
-    <div class="flip-wrap">
-      <div class="flip-card" id="flip-card">
-        <div class="flip-inner" id="flip-inner">
-
-          <div class="flip-face flip-front card-surface">
-            <div class="hanzi" id="p-hanzi-front">你好</div>
-            <div class="pinyin" id="p-pinyin-front">nǐ hǎo</div>
-            <button type="button" class="audio-btn" id="play-audio-btn" title="Phát âm">🔊</button>
-          </div>
-
-          <div class="flip-face flip-back card-surface">
-            <div class="hanzi" id="p-hanzi-back">你好</div>
-            <div class="pinyin" id="p-pinyin-back">nǐ hǎo</div>
-            <hr>
-            <div class="meaning" id="p-meaning">xin chào</div>
-            <div class="example" id="p-example"></div>
-            <div class="example-tools">
-              <button type="button" class="example-audio-btn hidden" id="example-audio-btn" title="Đọc cả câu ví dụ" aria-label="Đọc cả câu ví dụ">🔊</button>
-              <button type="button" class="toggle-gif-btn toggle-pinyin-btn hidden" id="toggle-pinyin-btn">🔤 Hiện pinyin</button>
+    <section class="card home-onboarding hidden" id="home-onboarding" aria-labelledby="home-onboarding-title">
+      <h2 id="home-onboarding-title">Bắt đầu với AnkiTool</h2>
+      <p class="text-muted">Chưa có từ nào. Ba bước để học tiếng Trung và mang thẻ sang Anki:</p>
+      <ol class="steps">
+        <li>
+          <span class="step-num" aria-hidden="true">1</span>
+          <div class="step-body">
+            <h3>Thêm từ</h3>
+            <p>Thêm từng từ, hoặc nhập nhiều từ cùng lúc từ file CSV do AI tạo.</p>
+            <div class="step-actions">
+              <button type="button" class="btn btn-primary" data-nav="tab-add"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-plus"></use></svg>Thêm từ đầu tiên</button>
+              <button type="button" class="btn btn-secondary" data-action="open-import"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-upload"></use></svg>Nhập từ CSV</button>
             </div>
-            <div class="mnemonic" id="p-mnemonic"></div>
-            <button type="button" class="toggle-gif-btn hidden" id="toggle-gif-btn">✍️ Xem cách viết nét</button>
-            <div class="gif-content" id="p-gif"></div>
           </div>
+        </li>
+        <li>
+          <span class="step-num" aria-hidden="true">2</span>
+          <div class="step-body">
+            <h3>Học</h3>
+            <p>Học các thẻ đến hạn; app tự lên lịch ôn lại theo mức nhớ của bạn.</p>
+            <div class="step-actions"><button type="button" class="btn btn-secondary" data-nav="tab-study"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-study"></use></svg>Mở trang Học</button></div>
+          </div>
+        </li>
+        <li>
+          <span class="step-num" aria-hidden="true">3</span>
+          <div class="step-body">
+            <h3>Xuất sang Anki</h3>
+            <p>Tải file .apkg chứa các từ của một danh mục, rồi nhập vào Anki.</p>
+            <div class="step-actions"><button type="button" class="btn btn-secondary" data-nav="tab-library"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-download"></use></svg>Mở Từ vựng</button></div>
+          </div>
+        </li>
+      </ol>
+    </section>
 
+    <div id="home-content">
+      <section class="card home-today" aria-labelledby="home-today-title">
+        <div class="home-today-main">
+          <h2 id="home-today-title">Hôm nay</h2>
+          <p class="home-today-msg text-muted" id="home-today-msg"><span class="skeleton">Đang tải số thẻ cần học</span></p>
+          <div class="home-counters">
+            <div class="counter"><span class="counter-num state-new" id="home-new"><span class="skeleton">00</span></span><span class="counter-label">Mới</span></div>
+            <div class="counter"><span class="counter-num state-learn" id="home-learn"><span class="skeleton">00</span></span><span class="counter-label">Đang học</span></div>
+            <div class="counter"><span class="counter-num state-review" id="home-review"><span class="skeleton">00</span></span><span class="counter-label">Ôn lại</span></div>
+            <div class="counter counter-total"><span class="counter-num" id="home-due-total"><span class="skeleton">00</span></span><span class="counter-label">Tổng</span></div>
+          </div>
+        </div>
+        <button type="button" class="btn btn-primary btn-lg" id="home-study-btn"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-play"></use></svg>Học ngay</button>
+      </section>
+
+      <div class="home-grid">
+        <section class="card" aria-labelledby="home-decks-title">
+          <div class="card-head">
+            <h2 id="home-decks-title">Bộ thẻ</h2>
+            <button type="button" class="btn btn-ghost btn-sm" data-nav="tab-library">Quản lý từ vựng<svg class="icon" aria-hidden="true" focusable="false"><use href="#i-chevron-right"></use></svg></button>
+          </div>
+          <div id="home-decks" class="deck-table"></div>
+        </section>
+
+        <div class="home-side">
+          <section class="card" id="home-collection" aria-labelledby="home-collection-title">
+            <h2 id="home-collection-title">Kho từ</h2>
+            <p class="collection-total"><span class="collection-total-num" id="home-total"><span class="skeleton">00</span></span> từ</p>
+            <div class="collection-bar" id="home-bar" role="img" aria-label="Tỉ lệ từ chưa học, đang học và đã thuộc"></div>
+            <ul class="collection-legend">
+              <li><span class="legend-swatch legend-new" aria-hidden="true"></span>Chưa học <b id="home-c-new">0</b></li>
+              <li><span class="legend-swatch legend-learning" aria-hidden="true"></span>Đang học <b id="home-c-learning">0</b></li>
+              <li><span class="legend-swatch legend-mature" aria-hidden="true"></span>Đã thuộc <b id="home-c-mature">0</b></li>
+            </ul>
+            <p class="field-help">Đã thuộc = đã ôn và khoảng cách ôn lại từ 21 ngày trở lên.</p>
+          </section>
+
+          <section class="card" aria-labelledby="home-quick-title">
+            <h2 id="home-quick-title">Thêm từ</h2>
+            <div class="home-quick">
+              <button type="button" class="btn btn-secondary" data-nav="tab-add"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-plus"></use></svg>Thêm từ</button>
+              <button type="button" class="btn btn-secondary" data-action="open-import"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-upload"></use></svg>Nhập từ CSV</button>
+            </div>
+          </section>
         </div>
       </div>
     </div>
-    <p class="flip-tip" id="flip-tip">Bấm vào thẻ để xem đáp án</p>
-  </section>
-
-</main>
-
-<!-- TAB: Quản lý danh mục -->
-<section class="tab-panel hidden" id="tab-categories">
-  <div class="layout layout-single">
-    <section class="panel">
-      <h2>Quản lý danh mục</h2>
-      <p class="preview-hint">Bấm tên danh mục để học danh mục đó. Dùng ⚙ để đổi tên, thêm danh mục con hoặc xóa (tối đa 2 cấp; xóa bị chặn nếu còn danh mục con hoặc còn từ bên trong). Các cột chỉ đếm từ đến hạn hôm nay.</p>
-
-      <div class="category-add-row">
-        <input type="text" id="new-parent-name" placeholder="Tên danh mục cha mới" autocomplete="off">
-        <button type="button" id="add-parent-btn" class="btn btn-primary">+ Thêm danh mục cha</button>
-      </div>
-      <p class="form-msg" id="category-msg"></p>
-
-      <div id="deck-table" class="deck-table"></div>
-    </section>
-
-    <section class="panel">
-      <h2>Gán từ vào danh mục</h2>
-      <div class="assign-controls">
-        <label for="assign-scope">Danh mục</label>
-        <select id="assign-scope"></select>
-      </div>
-      <div id="assign-list" class="assign-list"></div>
-    </section>
   </div>
-
-  <div class="gear-menu hidden" id="gear-menu"></div>
 </section>
 
-<!-- TAB: Học -->
+<!-- TAB: Học (kiểu Anki: nền phẳng, đáp án hiện dưới câu hỏi, thanh dưới 3 vùng) -->
 <section class="tab-panel hidden" id="tab-study">
   <div class="layout layout-study">
-    <section class="panel study-panel">
-      <h2>Học</h2>
+    <section class="study-panel">
       <div class="study-controls">
         <label for="study-category-filter">Phạm vi học</label>
         <select id="study-category-filter">
           <option value="">Tất cả danh mục</option>
         </select>
-        <span class="study-remaining" id="study-remaining"></span>
       </div>
 
       <div id="study-empty" class="study-empty hidden">
-        🎉 Không còn từ nào đến hạn ngay bây giờ. Quay lại sau nhé!
+        <p>Không còn từ nào đến hạn ngay bây giờ. Quay lại sau nhé!</p>
+        <p class="study-buried-note hidden" id="study-buried-note">
+          <span id="study-buried-text"></span>
+          <button type="button" class="btn btn-ghost" id="study-unbury-btn">Bỏ hoãn</button>
+        </p>
       </div>
 
       <div id="study-waiting" class="study-waiting hidden">
-        ⏳ Đang chờ thẻ tiếp theo — còn <b id="study-wait-time">00:00</b>
+        Đang chờ thẻ tiếp theo — còn <b id="study-wait-time">00:00</b>
         <div class="study-waiting-hint">Thẻ sẽ tự hiện khi đến giờ.</div>
       </div>
 
-      <div id="study-card-wrap" class="flip-wrap study-flip-wrap">
-        <div class="flip-card study-card" id="study-flip-card">
-          <div class="flip-inner" id="study-flip-inner">
+      <div id="study-card-wrap" class="study-card-wrap">
+        <div class="study-card" id="study-card">
 
-            <div class="flip-face flip-front card-surface">
-              <div class="hanzi" id="study-hanzi-front">你好</div>
-              <div class="pinyin" id="study-pinyin-front">nǐ hǎo</div>
-              <button type="button" class="audio-btn" id="study-play-audio-btn" title="Phát âm">🔊</button>
+          <!-- CÂU HỎI: luôn nằm trên -->
+          <div class="study-q" id="study-q">
+            <div class="hanzi" id="study-hanzi-front">你好</div>
+            <div class="pinyin" id="study-pinyin-front">nǐ hǎo</div>
+            <button type="button" class="audio-btn" id="study-play-audio-btn" title="Phát âm (R)" aria-label="Phát âm"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-speaker"></use></svg></button>
+            <div class="study-type hidden" id="study-type">
+              <input type="text" id="study-type-input" class="study-type-input" placeholder="Gõ pinyin rồi nhấn Enter"
+                     autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Gõ pinyin của từ">
             </div>
-
-            <div class="flip-face flip-back card-surface">
-              <div class="hanzi" id="study-hanzi-back">你好</div>
-              <div class="pinyin" id="study-pinyin-back">nǐ hǎo</div>
-              <hr>
-              <div class="meaning" id="study-meaning">xin chào</div>
-              <div class="example" id="study-example"></div>
-              <div class="example-tools">
-                <button type="button" class="example-audio-btn hidden" id="study-example-audio-btn" title="Đọc cả câu ví dụ" aria-label="Đọc cả câu ví dụ">🔊</button>
-                <button type="button" class="toggle-gif-btn toggle-pinyin-btn hidden" id="study-toggle-pinyin-btn">🔤 Hiện pinyin</button>
-              </div>
-              <div class="mnemonic" id="study-mnemonic"></div>
-              <button type="button" class="toggle-gif-btn hidden" id="study-toggle-gif-btn">✍️ Xem cách viết nét</button>
-              <div class="gif-content" id="study-gif"></div>
-            </div>
-
+            <p class="study-hint" id="study-hint">Chạm vào bất kỳ đâu để xem đáp án · Vuốt phải: Good · Vuốt trái: Again</p>
           </div>
+
+          <!-- ĐÁP ÁN: hiện ngay dưới câu hỏi, ngăn bằng đường kẻ -->
+          <div class="study-a hidden" id="study-a">
+            <hr id="study-answer-anchor">
+            <div class="study-type-result hidden" id="study-type-result"></div>
+            <div class="meaning" id="study-meaning">xin chào</div>
+            <div class="example" id="study-example"></div>
+            <div class="example-tools">
+              <button type="button" class="example-audio-btn hidden" id="study-example-audio-btn" title="Đọc cả câu ví dụ (R)" aria-label="Đọc cả câu ví dụ"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-speaker"></use></svg></button>
+              <button type="button" class="toggle-gif-btn toggle-pinyin-btn hidden" id="study-toggle-pinyin-btn"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-eye"></use></svg>Hiện pinyin</button>
+            </div>
+            <div class="mnemonic" id="study-mnemonic"></div>
+            <button type="button" class="toggle-gif-btn hidden" id="study-toggle-gif-btn"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-edit"></use></svg>Xem cách viết nét</button>
+            <div class="gif-content" id="study-gif"></div>
+          </div>
+
         </div>
       </div>
     </section>
   </div>
 
+  <div class="study-toast hidden" id="study-toast" role="status" aria-live="polite"></div>
+
+  <!-- THANH DƯỚI: Sửa từ | bộ đếm + Hiện đáp án / 4 nút chấm | Thêm -->
   <div class="study-bar hidden" id="study-bar">
     <div class="study-bar-inner">
-      <button type="button" class="btn study-show-btn" id="study-show-btn">Hiện đáp án</button>
-      <div class="study-grades hidden" id="study-grades">
-        <div class="study-grade">
-          <span class="study-grade-time" id="study-time-again"></span>
-          <button type="button" class="btn btn-grade btn-grade-again" data-grade="again">Again</button>
+      <div class="study-bar-left">
+        <button type="button" class="study-side-btn" id="study-edit-btn" title="Sửa từ (E)" aria-label="Sửa từ">
+          <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-edit"></use></svg><span class="side-label">Sửa từ</span>
+        </button>
+      </div>
+
+      <div class="study-bar-mid">
+        <div class="study-counts" id="study-counts" role="group" aria-label="Số từ còn lại: mới, đang học, ôn lại"></div>
+        <div class="study-grades" id="study-grades">
+          <div class="study-grade">
+            <span class="study-grade-time" id="study-time-again"></span>
+            <button type="button" class="btn btn-grade btn-grade-again" data-grade="again" title="Again (1)">Again</button>
+          </div>
+          <div class="study-grade">
+            <span class="study-grade-time" id="study-time-hard"></span>
+            <button type="button" class="btn btn-grade btn-grade-hard" data-grade="hard" title="Hard (2)">Hard</button>
+          </div>
+          <div class="study-grade">
+            <span class="study-grade-time" id="study-time-good"></span>
+            <button type="button" class="btn btn-grade btn-grade-good" data-grade="good" title="Good (3; Space sau khi hiện đáp án)">Good</button>
+          </div>
+          <div class="study-grade">
+            <span class="study-grade-time" id="study-time-easy"></span>
+            <button type="button" class="btn btn-grade btn-grade-easy" data-grade="easy" title="Easy (4)">Easy</button>
+          </div>
         </div>
-        <div class="study-grade">
-          <span class="study-grade-time" id="study-time-hard"></span>
-          <button type="button" class="btn btn-grade btn-grade-hard" data-grade="hard">Hard</button>
-        </div>
-        <div class="study-grade">
-          <span class="study-grade-time" id="study-time-good"></span>
-          <button type="button" class="btn btn-grade btn-grade-good" data-grade="good">Good</button>
-        </div>
-        <div class="study-grade">
-          <span class="study-grade-time" id="study-time-easy"></span>
-          <button type="button" class="btn btn-grade btn-grade-easy" data-grade="easy">Easy</button>
+      </div>
+
+      <div class="study-bar-right">
+        <span class="study-auto-label hidden" id="study-auto-label" title="Tự chuyển thẻ đang bật (Shift+A để tắt)">⏱ Tự chuyển</span>
+        <div class="study-more">
+          <button type="button" class="study-side-btn" id="study-more-btn" aria-haspopup="menu" aria-expanded="false" title="Thêm">
+            <span class="side-label">Thêm</span><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-chevron-down"></use></svg>
+          </button>
+          <div class="study-more-menu hidden" id="study-more-menu" role="menu">
+            <button type="button" role="menuitem" data-action="bury"><span class="menu-check"></span><span class="menu-text">Hoãn thẻ</span><kbd>-</kbd></button>
+            <button type="button" role="menuitem" data-action="replay"><span class="menu-check"></span><span class="menu-text">Nghe lại</span><kbd>R</kbd></button>
+            <button type="button" role="menuitem" data-action="auto" aria-checked="false"><span class="menu-check"></span><span class="menu-text">Tự chuyển thẻ</span><kbd>Shift+A</kbd></button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- TAB: Cài đặt -->
-<section class="tab-panel hidden" id="tab-settings">
-  <div class="layout layout-settings">
-    <section class="panel settings-section" id="settings-review-timing">
-      <h2>Thời gian ôn lại</h2>
-      <p class="settings-help">
-        Từ mới hoặc từ vừa bấm Again sẽ xuất hiện lại sau khoảng thời gian bạn chọn cho từng mức.
-        Từ đã thuộc (bấm Good/Easy) thì các lần sau tự giãn cách theo ngày.
-        Với <b>Again</b> bạn có thể đặt vài giây hoặc 0 để thẻ quay lại ngay (khi hết thẻ khác, thẻ Again được hiện luôn, không phải đợi).
-      </p>
+
+<!-- TRANG: Từ vựng (cây danh mục + bảng từ) -->
+<section class="tab-panel hidden" id="tab-library" aria-label="Từ vựng">
+  <div class="page library">
+
+    <aside class="card library-cats" aria-label="Danh mục">
+      <div class="card-head">
+        <h2>Danh mục</h2>
+        <button type="button" class="btn btn-secondary btn-sm" id="lib-add-category-btn"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-plus"></use></svg>Danh mục</button>
+      </div>
+      <div id="lib-categories" class="cat-list"></div>
+    </aside>
+
+    <div class="library-main">
+      <div class="field library-select">
+        <label for="lib-category-select">Danh mục</label>
+        <select id="lib-category-select"></select>
+      </div>
+
+      <div class="library-toolbar">
+        <div class="library-heading">
+          <h2 id="lib-heading">Tất cả từ</h2>
+          <span class="text-muted" id="lib-count">0 từ</span>
+        </div>
+        <div class="toolbar-actions">
+          <button type="button" class="btn btn-primary" id="lib-add-btn"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-plus"></use></svg>Thêm từ</button>
+          <button type="button" class="btn btn-secondary" data-action="open-import"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-upload"></use></svg>Nhập từ CSV</button>
+          <div class="export-wrap">
+            <button type="button" class="btn btn-secondary" id="lib-export-btn" aria-expanded="false" aria-controls="lib-export-panel"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-download"></use></svg><span id="lib-export-label">Xuất sang Anki (.apkg)</span></button>
+            <div class="popover hidden" id="lib-export-panel" role="group" aria-label="Xuất sang Anki">
+              <div class="field">
+                <label for="lib-deck-name">Tên bộ thẻ (deck)</label>
+                <input type="text" id="lib-deck-name" value="MyChineseDeck" autocomplete="off">
+              </div>
+              <p class="field-help" id="lib-export-hint">File chứa các từ đang hiển thị. Sau khi tải xong: mở Anki, chọn File, Import rồi chọn file vừa tải.</p>
+              <button type="button" class="btn btn-primary btn-block" id="lib-export-go"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-download"></use></svg>Tải file .apkg</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bulk-bar hidden" id="lib-bulk-bar" role="region" aria-label="Thao tác với các từ đã chọn">
+        <span class="bulk-count" id="lib-bulk-count" aria-live="polite">Đã chọn 0 từ</span>
+        <label for="lib-bulk-category" class="sr-only">Danh mục đích</label>
+        <select id="lib-bulk-category" class="cat-select"></select>
+        <button type="button" class="btn btn-primary btn-sm" id="lib-bulk-apply" disabled>Chuyển</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="lib-bulk-clear">Bỏ chọn</button>
+      </div>
+
+      <div id="lib-state"></div>
+
+      <div class="table-wrap" id="lib-table-wrap">
+        <table class="table word-table" id="lib-table">
+          <thead>
+            <tr><th scope="col" class="cell-select"><label><input type="checkbox" id="lib-select-all" aria-label="Chọn tất cả từ đang hiển thị"><span class="select-all-label">Chọn tất cả</span></label></th><th scope="col">Từ</th><th scope="col">Pinyin</th><th scope="col">Nghĩa</th><th scope="col">Danh mục</th><th scope="col">Trạng thái</th><th scope="col"><span class="sr-only">Thao tác</span></th></tr>
+          </thead>
+          <tbody id="lib-rows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="gear-menu hidden" id="gear-menu"></div>
+  </div>
+</section>
+
+<!-- TRANG: Thêm / sửa từ -->
+<section class="tab-panel hidden" id="tab-add" aria-label="Thêm từ">
+  <div class="layout add-layout">
+
+    <div class="add-main">
+      <div class="add-head">
+        <div class="add-head-text">
+          <button type="button" class="btn btn-ghost btn-sm hidden" id="add-back-btn" data-nav="tab-library"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-back"></use></svg>Về Từ vựng</button>
+          <h2 id="form-title">Thêm từ mới</h2>
+          <p class="text-muted hidden" id="form-subtitle"></p>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" data-action="open-import"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-upload"></use></svg>Nhập nhiều từ từ CSV</button>
+      </div>
+
+      <form id="word-form" novalidate>
+        <input type="hidden" id="word-id" value="">
+
+        <fieldset class="card form-group">
+          <legend>Thông tin chính</legend>
+          <div class="field">
+            <label for="hanzi">Chữ Hán <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="hanzi" name="hanzi" placeholder="你好" autocomplete="off" required aria-describedby="hanzi-error">
+            <p class="field-error hidden" id="hanzi-error"></p>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="pinyin">Pinyin <span class="req" aria-hidden="true">*</span></label>
+              <input type="text" id="pinyin" name="pinyin" placeholder="nǐ hǎo" autocomplete="off" required aria-describedby="pinyin-error">
+              <p class="field-error hidden" id="pinyin-error"></p>
+            </div>
+            <button type="button" id="listen-btn" class="btn btn-secondary" title="Nghe thử phát âm"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-speaker"></use></svg>Nghe thử</button>
+          </div>
+
+          <div class="field">
+            <label for="meaning">Nghĩa tiếng Việt <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="meaning" name="meaning" placeholder="xin chào" autocomplete="off" required aria-describedby="meaning-error">
+            <p class="field-error hidden" id="meaning-error"></p>
+          </div>
+        </fieldset>
+
+        <fieldset class="card form-group">
+          <legend>Câu ví dụ</legend>
+          <div class="field">
+            <label for="example">Nội dung câu</label>
+            <textarea id="example" name="example" rows="2" placeholder="你好，很高兴认识你。(Xin chào, rất vui được gặp bạn.)"></textarea>
+          </div>
+          <div class="field">
+            <label for="example-pinyin">Pinyin câu ví dụ</label>
+            <input type="text" id="example-pinyin" name="example_pinyin" placeholder="nǐ hǎo hěn gāo xìng rèn shi nǐ" autocomplete="off" aria-describedby="example-pinyin-help">
+            <p class="field-help" id="example-pinyin-help">Mỗi chữ Hán một âm tiết, cách nhau dấu cách, không dấu câu. Bỏ trống nếu không cần.</p>
+          </div>
+        </fieldset>
+
+        <fieldset class="card form-group">
+          <legend>Phân loại và hình ảnh</legend>
+          <div class="field">
+            <label for="word-category">Danh mục</label>
+            <select id="word-category" name="category_id" aria-describedby="word-category-help">
+              <option value="">Chưa phân loại</option>
+            </select>
+            <p class="field-help" id="word-category-help">Tùy chọn, chỉ chọn được danh mục con.</p>
+          </div>
+
+          <details class="image-details" open>
+            <summary><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-image"></use></svg>Ảnh gợi nhớ <span class="hint">(hiện luôn ở mặt đáp án)</span></summary>
+            <div class="image-search" id="image-search">
+              <div class="image-search-row">
+                <div class="field">
+                  <label for="image-keyword">Từ khóa tìm ảnh</label>
+                  <input type="text" id="image-keyword" autocomplete="off" aria-describedby="image-keyword-help">
+                  <p class="field-help" id="image-keyword-help">Tự điền từ nghĩa của từ. Ít kết quả thì thử từ tiếng Anh (ví dụ "apple").</p>
+                </div>
+                <button type="button" class="btn btn-secondary" id="image-search-btn"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-search"></use></svg>Tìm ảnh minh hoạ</button>
+              </div>
+              <p class="image-search-status" id="image-search-status" role="status"></p>
+              <div class="image-suggestions" id="image-suggestions"></div>
+            </div>
+            <div class="field">
+              <label for="mnemonic" class="sr-only">Chọn ảnh gợi nhớ</label>
+              <input type="file" id="mnemonic" name="mnemonic" accept=".gif,.png,.jpg,.jpeg,.webp,.svg">
+              <div class="paste-zone" id="mnemonic-paste-zone" tabindex="0" role="button"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-clipboard"></use></svg>Hoặc bấm vào đây rồi dán ảnh (Ctrl+V)</div>
+              <p class="paste-status" id="mnemonic-paste-status"></p>
+              <p class="image-credit hidden" id="mnemonic-credit"></p>
+              <div id="mnemonic-current" class="gif-current hidden">
+                <span>Ảnh hiện tại đã lưu.</span>
+                <button type="button" id="remove-mnemonic-btn" class="btn btn-sm btn-danger-quiet"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-trash"></use></svg>Xóa ảnh</button>
+              </div>
+            </div>
+          </details>
+
+          <details class="image-details" open>
+            <summary><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-edit"></use></svg>Ảnh GIF nét viết <span class="hint">(ẩn sẵn, bấm nút mới hiện)</span></summary>
+            <div class="field">
+              <label for="gif" class="sr-only">Chọn ảnh nét viết</label>
+              <input type="file" id="gif" name="gif" accept=".gif,.png,.jpg,.jpeg,.webp,.svg">
+              <div class="paste-zone" id="gif-paste-zone" tabindex="0" role="button"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-clipboard"></use></svg>Hoặc bấm vào đây rồi dán ảnh (Ctrl+V)</div>
+              <p class="paste-status" id="gif-paste-status"></p>
+              <div id="gif-current" class="gif-current hidden">
+                <span>Ảnh hiện tại đã lưu.</span>
+                <button type="button" id="remove-gif-btn" class="btn btn-sm btn-danger-quiet"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-trash"></use></svg>Xóa ảnh</button>
+              </div>
+            </div>
+          </details>
+        </fieldset>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="save-btn">Lưu từ</button>
+          <button type="button" class="btn btn-ghost hidden" id="cancel-edit-btn">Hủy sửa</button>
+        </div>
+        <p class="form-msg" id="form-msg" role="status"></p>
+      </form>
+    </div>
+
+    <!-- XEM TRƯỚC THẺ -->
+    <section class="card preview-panel">
+      <h2>Xem trước thẻ</h2>
+      <p class="preview-hint">Bấm vào thẻ để lật mặt trước / mặt sau, giống hệt khi học trong Anki.</p>
+
+      <div class="flip-wrap">
+        <div class="flip-card" id="flip-card">
+          <div class="flip-inner" id="flip-inner">
+
+            <div class="flip-face flip-front card-surface">
+              <div class="hanzi" id="p-hanzi-front">你好</div>
+              <div class="pinyin" id="p-pinyin-front">nǐ hǎo</div>
+              <button type="button" class="audio-btn" id="play-audio-btn" title="Phát âm" aria-label="Phát âm"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-speaker"></use></svg></button>
+            </div>
+
+            <div class="flip-face flip-back card-surface">
+              <div class="hanzi" id="p-hanzi-back">你好</div>
+              <div class="pinyin" id="p-pinyin-back">nǐ hǎo</div>
+              <hr>
+              <div class="meaning" id="p-meaning">xin chào</div>
+              <div class="example" id="p-example"></div>
+              <div class="example-tools">
+                <button type="button" class="example-audio-btn hidden" id="example-audio-btn" title="Đọc cả câu ví dụ" aria-label="Đọc cả câu ví dụ"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-speaker"></use></svg></button>
+                <button type="button" class="toggle-gif-btn toggle-pinyin-btn hidden" id="toggle-pinyin-btn"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-eye"></use></svg>Hiện pinyin</button>
+              </div>
+              <div class="mnemonic" id="p-mnemonic"></div>
+              <button type="button" class="toggle-gif-btn hidden" id="toggle-gif-btn"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-edit"></use></svg>Xem cách viết nét</button>
+              <div class="gif-content" id="p-gif"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm flip-tip" id="flip-tip" aria-controls="flip-card">Bấm vào thẻ để xem đáp án</button>
+    </section>
+
+  </div>
+</section>
+
+<!-- TRANG: Cài đặt -->
+<section class="tab-panel hidden" id="tab-settings" aria-label="Cài đặt">
+  <div class="page settings-page">
+
+    <h2 class="settings-group-title">Lịch ôn tập</h2>
+    <section class="card settings-section" id="settings-review-timing" aria-labelledby="timing-title">
+      <h3 id="timing-title">Thời gian ôn lại</h3>
+      <details class="help">
+        <summary>Giải thích</summary>
+        <p class="settings-help">
+          Từ mới hoặc từ vừa bấm Again sẽ xuất hiện lại sau khoảng thời gian bạn chọn cho từng mức.
+          Từ đã thuộc (bấm Good/Easy) thì các lần sau tự giãn cách theo ngày.
+          Với <b>Again</b> bạn có thể đặt vài giây hoặc 0 để thẻ quay lại ngay (khi hết thẻ khác, thẻ Again được hiện luôn, không phải đợi).
+        </p>
+      </details>
       <div class="timing-rows">
         <div class="timing-row" data-grade="again">
           <span class="timing-label"><b>Again</b> <small>quên</small></span>
@@ -352,21 +578,100 @@
       </div>
       <div class="settings-actions">
         <button type="button" class="btn btn-primary" id="timing-save-btn">Lưu</button>
-        <button type="button" class="btn" id="timing-reset-btn">Khôi phục mặc định</button>
-        <span class="form-msg" id="timing-msg"></span>
+        <button type="button" class="btn btn-secondary" id="timing-reset-btn">Khôi phục mặc định</button>
+        <span class="form-msg" id="timing-msg" role="status"></span>
       </div>
+    </section>
+
+    <h2 class="settings-group-title">Khi học</h2>
+    <section class="card settings-section" id="settings-study-autoplay" aria-labelledby="autoplay-title">
+      <h3 id="autoplay-title">Tự động đọc</h3>
+      <details class="help">
+        <summary>Giải thích</summary>
+        <p class="settings-help">
+          Ở trang Học, app có thể tự đọc để bạn khỏi bấm nút loa ở từng thẻ. Đổi công tắc là lưu ngay; có hiệu lực từ lần mở trang Học kế tiếp.
+          Nếu trình duyệt chặn tự phát âm thanh (thường gặp trên iPhone/Safari) thì thẻ vẫn học bình thường, bạn bấm nút loa để nghe.
+        </p>
+      </details>
+      <div class="switch-rows">
+        <label class="switch">
+          <input type="checkbox" role="switch" id="autoplay-word">
+          <span>Tự đọc từ khi sang thẻ mới</span>
+        </label>
+        <label class="switch">
+          <input type="checkbox" role="switch" id="autoplay-example">
+          <span>Tự đọc câu ví dụ khi hiện đáp án</span>
+        </label>
+      </div>
+      <p class="form-msg" id="autoplay-msg" role="status"></p>
+    </section>
+
+    <section class="card settings-section" id="settings-study-auto-advance" aria-labelledby="aa-title">
+      <h3 id="aa-title">Tự chuyển thẻ</h3>
+      <details class="help">
+        <summary>Giải thích</summary>
+        <p class="settings-help">
+          Khi học, bật hoặc tắt bằng phím <b>Shift+A</b> hoặc menu "Thêm" (mỗi lần tải lại trang sẽ tắt). Khi bật, app tự hiện đáp án rồi tự làm một hành động sau khoảng thời gian dưới đây.
+          Đặt <b>0</b> giây để bỏ bước đó. Đổi là lưu ngay; có hiệu lực từ lần mở trang Học kế tiếp.
+        </p>
+      </details>
+      <div class="aa-rows">
+        <label class="aa-row">
+          <span>Hiện đáp án sau</span>
+          <span class="aa-input"><input type="number" min="0" max="3600" step="1" inputmode="numeric" id="aa-question"> giây</span>
+        </label>
+        <label class="aa-row">
+          <span>Rồi sau</span>
+          <span class="aa-input"><input type="number" min="0" max="3600" step="1" inputmode="numeric" id="aa-answer"> giây thì</span>
+        </label>
+        <label class="aa-row">
+          <span>Hành động</span>
+          <select id="aa-action">
+            <option value="remind">Chỉ nhắc (không đổi gì)</option>
+            <option value="again">Chấm Again</option>
+            <option value="hard">Chấm Hard</option>
+            <option value="good">Chấm Good</option>
+            <option value="bury">Hoãn thẻ đến ngày mai</option>
+          </select>
+        </label>
+        <label class="switch">
+          <input type="checkbox" role="switch" id="aa-wait-audio">
+          <span>Chờ âm thanh đọc xong rồi mới chuyển</span>
+        </label>
+      </div>
+      <p class="form-msg" id="aa-msg" role="status"></p>
+    </section>
+
+    <section class="card settings-section" id="settings-study-type-answer" aria-labelledby="ta-title">
+      <h3 id="ta-title">Gõ đáp án</h3>
+      <details class="help">
+        <summary>Giải thích</summary>
+        <p class="settings-help">
+          Khi bật, mặt câu hỏi ẩn pinyin và có ô để bạn gõ pinyin của từ rồi nhấn Enter. Khi hiện đáp án, phần bạn gõ được tô
+          xanh (đúng), đỏ (sai), xám (thiếu). So khớp bỏ qua dấu thanh, hoa/thường và khoảng trắng (<code>v</code> = <code>ü</code>).
+          Chỉ để tham khảo, không tự chấm điểm. Đổi là lưu ngay; có hiệu lực từ lần mở trang Học kế tiếp.
+        </p>
+      </details>
+      <div class="switch-rows">
+        <label class="switch">
+          <input type="checkbox" role="switch" id="type-answer-enabled">
+          <span>Gõ pinyin trước khi hiện đáp án</span>
+        </label>
+      </div>
+      <p class="form-msg" id="type-answer-msg" role="status"></p>
     </section>
   </div>
 </section>
 
+</main>
 </div><!-- /.app-main -->
 </div><!-- /.app-shell -->
 
 <!-- HỘP THOẠI: nhập hàng loạt từ CSV (xem js/features/add-word/import/) -->
-<dialog id="import-dialog" class="import-dialog" aria-labelledby="import-title">
+<dialog id="import-dialog" class="dialog import-dialog" aria-labelledby="import-title">
   <div class="import-head">
     <h2 id="import-title">Nhập từ vựng từ CSV</h2>
-    <button type="button" class="import-close" id="import-close-btn" title="Đóng" aria-label="Đóng">✕</button>
+    <button type="button" class="import-close" id="import-close-btn" title="Đóng" aria-label="Đóng"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg></button>
   </div>
 
   <div class="import-body">
@@ -377,13 +682,24 @@
         <p class="import-help">Nhập danh sách từ (mỗi dòng một từ: chữ Hán, pinyin hay nghĩa tiếng Việt đều được), bấm <b>Sao chép prompt</b>, dán vào ChatGPT/Claude/... rồi lấy CSV AI trả về.</p>
         <textarea id="import-words" rows="4" placeholder="Ví dụ:&#10;你好&#10;谢谢&#10;yêu thương" spellcheck="false"></textarea>
         <div class="import-actions">
-          <button type="button" class="btn btn-icon" id="import-copy-btn">📋 Sao chép prompt</button>
+          <button type="button" class="btn btn-icon" id="import-copy-btn"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-clipboard"></use></svg>Sao chép prompt</button>
           <span class="form-msg" id="import-copy-msg"></span>
         </div>
         <details class="import-prompt-details">
           <summary>Xem nội dung prompt</summary>
           <textarea id="import-prompt-text" rows="10" readonly spellcheck="false"></textarea>
         </details>
+        <div class="import-book">
+          <p class="import-help">Hoặc <b>chụp ảnh các trang sách</b> của một bài học: gửi ảnh kèm prompt này cho AI, AI đọc ảnh, chọn từ nên học và trả CSV (chỉ chép khối <code>csv</code>).</p>
+          <div class="import-actions">
+            <button type="button" class="btn btn-icon" id="import-copy-book-btn"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-image"></use></svg>Sao chép prompt chụp sách</button>
+            <span class="form-msg" id="import-copy-book-msg"></span>
+          </div>
+          <details class="import-prompt-details">
+            <summary>Xem nội dung prompt chụp sách</summary>
+            <textarea id="import-book-prompt-text" rows="10" readonly spellcheck="false"></textarea>
+          </details>
+        </div>
       </div>
 
       <div class="import-block">
@@ -397,7 +713,7 @@
         </div>
         <textarea id="import-csv" rows="8" placeholder="hanzi,pinyin,meaning,example" spellcheck="false"></textarea>
         <div class="import-actions">
-          <label class="btn btn-ghost import-file-label" for="import-file">📄 Chọn file CSV</label>
+          <label class="btn btn-ghost import-file-label" for="import-file"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-upload"></use></svg>Chọn file CSV</label>
           <input type="file" id="import-file" accept=".csv,.txt,text/csv" hidden>
           <button type="button" class="btn btn-primary" id="import-preview-btn">Xem trước</button>
           <span class="form-msg" id="import-input-msg"></span>
@@ -416,7 +732,7 @@
         </table>
       </div>
       <div class="import-actions">
-        <button type="button" class="btn btn-ghost" id="import-back-btn">← Quay lại sửa</button>
+        <button type="button" class="btn btn-ghost" id="import-back-btn"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-back"></use></svg>Quay lại sửa</button>
         <button type="button" class="btn btn-primary" id="import-start-btn">Nhập từ</button>
       </div>
     </section>
@@ -447,6 +763,7 @@
     </section>
   </div>
 </dialog>
+
 
 <audio id="audio-player"></audio>
 

@@ -1,7 +1,7 @@
 // Menu trai: thu gon/mo rong (man hinh rong, nho trang thai), ngan keo (man hinh hep),
 // tieu de thanh tren cung va danh dau muc dang mo. Chi doi class tren #app-shell; hien thi do CSS lo.
 
-import { EVENTS, NARROW_SCREEN_QUERY, SIDEBAR_STORAGE_KEY } from "../constants.js";
+import { EVENTS, NARROW_SCREEN_QUERY, ROUTES, SIDEBAR_STORAGE_KEY } from "../constants.js";
 import { on } from "./events.js";
 
 function readCollapsed() {
@@ -73,27 +73,31 @@ export function initSidebar() {
     syncAria();
   });
 
-  // Tieu de thanh tren cung + danh dau muc dang mo; chon muc (ke ca do activate-tab) thi dong ngan keo
-  function markCurrent(tabId) {
-    sidebar.querySelectorAll(".tab-btn").forEach((btn) => {
-      const current = btn.dataset.tab === tabId;
-      if (current) {
-        btn.setAttribute("aria-current", "page");
-        title.textContent = btn.querySelector(".nav-label").textContent;
-      } else {
-        btn.removeAttribute("aria-current");
-      }
-    });
+  // Tieu de thanh tren cung + <title> tab trinh duyet; chon muc (ke ca do activate-tab) thi dong ngan keo.
+  // Trang co the tam doi ten (vd "Sua tu") bang su kien PAGE_TITLE_OVERRIDE.
+  const overrides = new Map();
+  let currentTab = null;
+
+  function paintTitle() {
+    const route = ROUTES.find((r) => r.tabId === currentTab);
+    const name = overrides.get(currentTab) || (route ? route.title : "");
+    title.textContent = name;
+    document.title = name ? `${name} · AnkiTool` : "AnkiTool";
   }
 
   on(EVENTS.TAB_ACTIVATED, (e) => {
-    markCurrent(e.detail.tabId);
+    currentTab = e.detail.tabId;
+    paintTitle();
     closeDrawer({ restoreFocus: false });
+  });
+
+  on(EVENTS.PAGE_TITLE_OVERRIDE, (e) => {
+    if (e.detail.title) overrides.set(e.detail.tabId, e.detail.title);
+    else overrides.delete(e.detail.tabId);
+    paintTitle();
   });
 
   // Khoi tao: ap trang thai da luu (script inline trong index.html da lam truoc khi ve) va muc dang mo
   shell.classList.toggle("sidebar-collapsed", readCollapsed());
-  const active = sidebar.querySelector(".tab-btn.active");
-  if (active) markCurrent(active.dataset.tab);
   syncAria();
 }
